@@ -42,6 +42,10 @@ module.exports = {
         '**/*.spec.tsx',
         '**/*.spec.js',
         '**/*.spec.jsx',
+        '**/*.test.ts',
+        '**/*.test.tsx',
+        '**/*.test.js',
+        '**/*.test.jsx',
       ],
       env: {
         jest: true,
