@@ -21,12 +21,10 @@ interface ICellProps {
   isMissed: boolean;
 }
 
-function Cell({
+const Cell:React.FunctionComponent<ICellProps> = ({
   isOwn, isDestroyed, isHitted, isMissed,
-}: ICellProps) {
-  return (
-    <CellContainer state={getStateFromIndicators(isOwn, isDestroyed, isHitted, isMissed)} />
-  );
-}
+}) => (
+  <CellContainer state={getStateFromIndicators(isOwn, isDestroyed, isHitted, isMissed)} />
+);
 
 export default memo(Cell);

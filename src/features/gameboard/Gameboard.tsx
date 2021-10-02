@@ -27,30 +27,37 @@ const cellsList = getInitialCeilsList();
 // selectCount,
 // } from './gameboardSlice';
 
-type IGameboardProps = {
+interface IGameboardProps {
   type: 'player' | 'cpu';
   ownShipsList: number[];
   destroyedShipsList: number[];
   hittedShipsList: number[];
   missedShipsList: number[];
-  miniature: boolean;
+  miniature?: boolean;
+  withName?: boolean
 }
 
-export function Gameboard({
+export const Gameboard: React.FunctionComponent<IGameboardProps> = ({
   type,
   ownShipsList,
   destroyedShipsList,
   hittedShipsList,
   missedShipsList,
   miniature,
-}: IGameboardProps) {
+  withName,
+}) => {
   // const count = useAppSelector(selectCount);
   // const dispatch = useAppDispatch();
   // const incrementValue = Number(incrementAmount) || 0;
 
+  Gameboard.defaultProps = {
+    miniature: false,
+    withName: false,
+  };
+
   return (
     <BoardContainer>
-      <BoardTitle>{type}</BoardTitle>
+      {withName && <BoardTitle>{type}</BoardTitle>}
       <BoardGrid miniature={miniature}>
         {cellsList.map((cellId) => (
           <Cell
@@ -64,4 +71,4 @@ export function Gameboard({
       </BoardGrid>
     </BoardContainer>
   );
-}
+};
