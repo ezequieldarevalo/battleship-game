@@ -33,6 +33,7 @@ type IGameboardProps = {
   destroyedShipsList: number[];
   hittedShipsList: number[];
   missedShipsList: number[];
+  miniature: boolean;
 }
 
 export function Gameboard({
@@ -41,6 +42,7 @@ export function Gameboard({
   destroyedShipsList,
   hittedShipsList,
   missedShipsList,
+  miniature,
 }: IGameboardProps) {
   // const count = useAppSelector(selectCount);
   // const dispatch = useAppDispatch();
@@ -49,7 +51,7 @@ export function Gameboard({
   return (
     <BoardContainer>
       <BoardTitle>{type}</BoardTitle>
-      <BoardGrid>
+      <BoardGrid miniature={miniature}>
         {cellsList.map((cellId) => (
           <Cell
             key={cellId}
