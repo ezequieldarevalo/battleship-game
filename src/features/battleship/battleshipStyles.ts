@@ -1,6 +1,11 @@
 import styled from 'styled-components';
 
-export const ScreenGame = styled.div`
+export const GameScreen = styled.div`
+  position: relative;
+  float: left;
+`;
+
+export const InitialScreen = styled.div`
   position: relative;
   float: left;
 `;
