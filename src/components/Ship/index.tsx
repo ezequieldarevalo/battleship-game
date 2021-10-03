@@ -13,8 +13,8 @@ interface ShipShapeProps {
 export const ShipShape = styled.div`
   background: grey;
   float: left;
-  width: ${({ orientation, size }: ShipShapeProps) => (orientation === 'vertical' ? (GAMEBOARD_WIDTH / size) : ((GAMEBOARD_WIDTH / BOARD_SIZE) * size))}px;
-  height: ${({ orientation, size }: ShipShapeProps) => (orientation === 'horizontal' ? (GAMEBOARD_WIDTH / size) : ((GAMEBOARD_WIDTH / BOARD_SIZE) * size))}px;
+  width: ${({ orientation, size }: ShipShapeProps) => (orientation === 'vertical' ? (GAMEBOARD_WIDTH / BOARD_SIZE) : ((GAMEBOARD_WIDTH / BOARD_SIZE) * size))}px;
+  height: ${({ orientation, size }: ShipShapeProps) => (orientation === 'horizontal' ? (GAMEBOARD_WIDTH / BOARD_SIZE) : ((GAMEBOARD_WIDTH / BOARD_SIZE) * size))}px;
 `;
 
 type SHIP_ORIENTATION='vertical' | 'horizontal'
