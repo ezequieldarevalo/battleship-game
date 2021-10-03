@@ -28,8 +28,12 @@ export const CurrentPlayer = styled.div`
   float: right;
 `;
 
-export const SurrenderButton = styled.button.attrs({ type: 'button' })`
+export const Button = styled.button.attrs({ type: 'button' })`
   float:right;
 `;
 
 export const EnterName = styled.input.attrs({ type: 'text' })``;
+
+export const WinnerName = styled.div``;
+
+export const WinnerDescription = styled.div``;

@@ -6,12 +6,14 @@ import {
   EndGameScreen,
   GameboardsPanel,
   CurrentPlayer,
-  SurrenderButton,
+  Button,
   EnterName,
+  WinnerName,
+  WinnerDescription,
 } from './battleshipStyles';
 
 function Battleship() {
-  const [stage] = useState<string>('initial');
+  const [stage] = useState<string>('end');
 
   // game screen
   if (stage === 'game') {
@@ -22,7 +24,9 @@ function Battleship() {
           <Gameboard withName type="cpu" ownShipsList={[]} destroyedShipsList={[]} hittedShipsList={[50]} missedShipsList={[51]} />
         </GameboardsPanel>
         <div>
-          <SurrenderButton>SURRENDER</SurrenderButton>
+          <Button>
+            SURRENDER
+          </Button>
           <CurrentPlayer>Playing: Player</CurrentPlayer>
         </div>
       </GameScreen>
@@ -33,7 +37,9 @@ function Battleship() {
       <InitialScreen>
         <Gameboard type="player" ownShipsList={[]} destroyedShipsList={[]} hittedShipsList={[]} missedShipsList={[]} />
         <div>
-          <SurrenderButton>START GAME</SurrenderButton>
+          <Button>
+            START GAME
+          </Button>
           <CurrentPlayer>
             <EnterName id="name" name="name" placeholder="Player name" />
           </CurrentPlayer>
@@ -41,7 +47,17 @@ function Battleship() {
       </InitialScreen>
     );
   }
-  return (<EndGameScreen><div /></EndGameScreen>);
+  return (
+    <EndGameScreen>
+      <div>
+        <WinnerName>Winner is: CPU</WinnerName>
+        <WinnerDescription>Player surrendered</WinnerDescription>
+        <Button>
+          Restart game
+        </Button>
+      </div>
+    </EndGameScreen>
+  );
 }
 
 export default Battleship;
