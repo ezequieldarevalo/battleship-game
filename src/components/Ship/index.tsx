@@ -35,8 +35,8 @@ interface ShipProps {
 }
 
 function Ship({ orientation, size, onStopFunction }: ShipProps) {
-  const handleDragStop = (e: any) => {
-    onStopFunction(e.x, e.y);
+  const handleDragStop = (event: any) => {
+    onStopFunction(event.x, event.y);
   };
 
   return (
