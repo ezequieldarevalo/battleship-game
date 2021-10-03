@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Gameboard from '../gameboard/Gameboard';
+import Gameboard from '../../components/Gameboard';
 import {
   Screen,
   GameboardsPanel,
@@ -13,7 +13,7 @@ import {
 function Battleship() {
   const [stage] = useState<string>('game');
 
-  // game screen
+  // GAME SCREEN
   if (stage === 'game') {
     return (
       <Screen>
@@ -30,6 +30,8 @@ function Battleship() {
       </Screen>
     );
   }
+
+  // INITIAL SCREEN
   if (stage === 'initial') {
     return (
       <Screen>
@@ -45,6 +47,7 @@ function Battleship() {
       </Screen>
     );
   }
+  // ENDGAME SCREEN
   return (
     <Screen>
       <div>
