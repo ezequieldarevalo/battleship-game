@@ -1,6 +1,7 @@
-import React from 'react';
-import { BoardContainer, BoardGrid, BoardTitle } from './gameboardStyles';
-import Cell from './Cell';
+import React, { memo } from 'react';
+import {
+  BoardContainer, BoardGrid, BoardTitle, CellContainer,
+} from './gameboardStyles';
 
 const isValueInList = (
   value: number,
@@ -15,17 +16,22 @@ const getInitialCeilsList = ():number[] => {
   return listArray;
 };
 
-const cellsList = getInitialCeilsList();
+const getStateFromIndicators = (
+  flagOwnCell: boolean,
+  flagDestroyedCell: boolean,
+  flagHittedCell: boolean,
+  flagMissedCell: boolean,
+) => {
+  // define state respecting relevance
+  // for example if is own and is destroyed the state must be destroyed (background: red)
+  if (flagDestroyedCell) return 'destroyed';
+  if (flagHittedCell) return 'hitted';
+  if (flagOwnCell) return 'own';
+  if (flagMissedCell) return 'missed';
+  return 'none';
+};
 
-// import { useAppSelector, useAppDispatch } from '../../app/hooks';
-// import {
-// decrement,
-// increment,
-// incrementByAmount,
-// incrementAsync,
-// incrementIfOdd,
-// selectCount,
-// } from './gameboardSlice';
+const cellsList = getInitialCeilsList();
 
 interface IGameboardProps {
   type: 'player' | 'cpu';
@@ -37,7 +43,7 @@ interface IGameboardProps {
   withName?: boolean
 }
 
-export const Gameboard: React.FunctionComponent<IGameboardProps> = ({
+const Gameboard: React.FunctionComponent<IGameboardProps> = ({
   type,
   ownShipsList,
   destroyedShipsList,
@@ -46,13 +52,17 @@ export const Gameboard: React.FunctionComponent<IGameboardProps> = ({
   miniature,
   withName,
 }) => {
-  // const count = useAppSelector(selectCount);
-  // const dispatch = useAppDispatch();
-  // const incrementValue = Number(incrementAmount) || 0;
-
   Gameboard.defaultProps = {
     miniature: false,
     withName: false,
+  };
+
+  const getState = (id:number) => {
+    const isOwn = isValueInList(id, ownShipsList);
+    const isDestroyed = isValueInList(id, destroyedShipsList);
+    const isHitted = isValueInList(id, hittedShipsList);
+    const isMissed = isValueInList(id, missedShipsList);
+    return getStateFromIndicators(isOwn, isDestroyed, isHitted, isMissed);
   };
 
   return (
@@ -60,15 +70,11 @@ export const Gameboard: React.FunctionComponent<IGameboardProps> = ({
       {withName && <BoardTitle>{type}</BoardTitle>}
       <BoardGrid miniature={miniature}>
         {cellsList.map((cellId) => (
-          <Cell
-            key={cellId}
-            isOwn={isValueInList(cellId, ownShipsList)}
-            isDestroyed={isValueInList(cellId, destroyedShipsList)}
-            isHitted={isValueInList(cellId, hittedShipsList)}
-            isMissed={isValueInList(cellId, missedShipsList)}
-          />
+          <CellContainer state={getState(cellId)} />
         ))}
       </BoardGrid>
     </BoardContainer>
   );
 };
+
+export default memo(Gameboard);

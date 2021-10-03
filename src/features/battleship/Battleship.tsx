@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Gameboard } from '../gameboard/Gameboard';
+import Gameboard from '../gameboard/Gameboard';
 import {
   InitialScreen,
   GameScreen,
