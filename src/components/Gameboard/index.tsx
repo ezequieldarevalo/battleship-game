@@ -70,7 +70,7 @@ const Gameboard: React.FunctionComponent<IGameboardProps> = ({
       {withName && <BoardTitle>{type}</BoardTitle>}
       <BoardGrid miniature={miniature}>
         {cellsList.map((cellId) => (
-          <CellContainer state={getState(cellId)} />
+          <CellContainer key={cellId} state={getState(cellId)} />
         ))}
       </BoardGrid>
     </BoardContainer>
