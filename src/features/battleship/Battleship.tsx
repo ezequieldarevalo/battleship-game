@@ -1,13 +1,19 @@
 import React, { useState } from 'react';
 import { Gameboard } from '../gameboard/Gameboard';
 import {
-  InitialScreen, GameScreen, GameboardsPanel, CurrentPlayer, SurrenderButton, InfoAndActionsPanel,
+  InitialScreen,
+  GameScreen,
+  EndGameScreen,
+  GameboardsPanel,
+  CurrentPlayer,
+  SurrenderButton,
+  EnterName,
 } from './battleshipStyles';
 
 function Battleship() {
   const [stage] = useState<string>('initial');
 
-  // only game screen
+  // game screen
   if (stage === 'game') {
     return (
       <GameScreen>
@@ -15,19 +21,27 @@ function Battleship() {
           <Gameboard withName type="player" miniature ownShipsList={[1, 2, 4, 6, 7]} destroyedShipsList={[32, 42, 52, 62]} hittedShipsList={[]} missedShipsList={[]} />
           <Gameboard withName type="cpu" ownShipsList={[]} destroyedShipsList={[]} hittedShipsList={[50]} missedShipsList={[51]} />
         </GameboardsPanel>
-        <InfoAndActionsPanel>
+        <div>
           <SurrenderButton>SURRENDER</SurrenderButton>
           <CurrentPlayer>Playing: Player</CurrentPlayer>
-        </InfoAndActionsPanel>
+        </div>
       </GameScreen>
     );
   }
-  // Initial stage screen
-  return (
-    <InitialScreen>
-      <Gameboard type="player" ownShipsList={[]} destroyedShipsList={[]} hittedShipsList={[]} missedShipsList={[]} />
-    </InitialScreen>
-  );
+  if (stage === 'initial') {
+    return (
+      <InitialScreen>
+        <Gameboard type="player" ownShipsList={[]} destroyedShipsList={[]} hittedShipsList={[]} missedShipsList={[]} />
+        <div>
+          <SurrenderButton>START GAME</SurrenderButton>
+          <CurrentPlayer>
+            <EnterName id="name" name="name" placeholder="Player name" />
+          </CurrentPlayer>
+        </div>
+      </InitialScreen>
+    );
+  }
+  return (<EndGameScreen><div /></EndGameScreen>);
 }
 
 export default Battleship;
