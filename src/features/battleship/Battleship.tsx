@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import Gameboard from '../gameboard/Gameboard';
 import {
-  InitialScreen,
-  GameScreen,
-  EndGameScreen,
+  Screen,
   GameboardsPanel,
   CurrentPlayer,
   Button,
@@ -13,12 +11,12 @@ import {
 } from './battleshipStyles';
 
 function Battleship() {
-  const [stage] = useState<string>('end');
+  const [stage] = useState<string>('game');
 
   // game screen
   if (stage === 'game') {
     return (
-      <GameScreen>
+      <Screen>
         <GameboardsPanel>
           <Gameboard withName type="player" miniature ownShipsList={[1, 2, 4, 6, 7]} destroyedShipsList={[32, 42, 52, 62]} hittedShipsList={[]} missedShipsList={[]} />
           <Gameboard withName type="cpu" ownShipsList={[]} destroyedShipsList={[]} hittedShipsList={[50]} missedShipsList={[51]} />
@@ -29,12 +27,12 @@ function Battleship() {
           </Button>
           <CurrentPlayer>Playing: Player</CurrentPlayer>
         </div>
-      </GameScreen>
+      </Screen>
     );
   }
   if (stage === 'initial') {
     return (
-      <InitialScreen>
+      <Screen>
         <Gameboard type="player" ownShipsList={[]} destroyedShipsList={[]} hittedShipsList={[]} missedShipsList={[]} />
         <div>
           <Button>
@@ -44,11 +42,11 @@ function Battleship() {
             <EnterName id="name" name="name" placeholder="Player name" />
           </CurrentPlayer>
         </div>
-      </InitialScreen>
+      </Screen>
     );
   }
   return (
-    <EndGameScreen>
+    <Screen>
       <div>
         <WinnerName>Winner is: CPU</WinnerName>
         <WinnerDescription>Player surrendered</WinnerDescription>
@@ -56,7 +54,7 @@ function Battleship() {
           Restart game
         </Button>
       </div>
-    </EndGameScreen>
+    </Screen>
   );
 }
 
