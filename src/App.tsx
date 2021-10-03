@@ -1,16 +1,27 @@
 import React from 'react';
 import styled from 'styled-components';
+import Battleship from './features/battleship/Battleship';
 
-const MainContainer = styled.div`
-  margin-top: 30px;
-  margin-left: 30px;
+const AppContainer = styled.div`
+  display: grid;
+  grid-template-columns:20px auto 20px;
+  justify-content:center;
+  @media (max-width: 996px) {
+    grid-template-columns:10px auto 10px;
+  }
 `;
 
 function App() {
   return (
-    <MainContainer>
-      BATTLESHIP GAME
-    </MainContainer>
+    <AppContainer>
+      <div id="margin-left" />
+      <div id="main-container">
+        BATTLESHIP GAME
+        <br />
+        <Battleship />
+      </div>
+      <div id="margin-right" />
+    </AppContainer>
   );
 }
 
