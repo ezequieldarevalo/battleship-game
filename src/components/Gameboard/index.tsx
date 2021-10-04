@@ -41,6 +41,7 @@ interface IGameboardProps {
   missedShipsList: number[];
   miniature?: boolean;
   withName?: boolean
+  children?: React.ReactElement
 }
 
 const Gameboard: React.FunctionComponent<IGameboardProps> = ({
@@ -51,10 +52,12 @@ const Gameboard: React.FunctionComponent<IGameboardProps> = ({
   missedShipsList,
   miniature,
   withName,
+  children,
 }) => {
   Gameboard.defaultProps = {
     miniature: false,
     withName: false,
+    children: <></>,
   };
 
   const getState = (id:number) => {
@@ -69,6 +72,7 @@ const Gameboard: React.FunctionComponent<IGameboardProps> = ({
     <BoardContainer>
       {withName && <BoardTitle>{type}</BoardTitle>}
       <BoardGrid miniature={miniature}>
+        {children}
         {cellsList.map((cellId) => (
           <CellContainer key={cellId} state={getState(cellId)} />
         ))}
