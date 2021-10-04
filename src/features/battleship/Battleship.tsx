@@ -5,13 +5,13 @@ import {
   GameboardsPanel,
   CurrentPlayer,
   Button,
-  EnterName,
   WinnerName,
   WinnerDescription,
-} from './battleshipStyles';
+} from '../../components/common/styles/screen';
+import InitialStage from '../initialStage/InitialStage';
 
 function Battleship() {
-  const [stage] = useState<string>('game');
+  const [stage] = useState<string>('initial');
 
   // GAME SCREEN
   if (stage === 'game') {
@@ -34,17 +34,7 @@ function Battleship() {
   // INITIAL SCREEN
   if (stage === 'initial') {
     return (
-      <Screen>
-        <Gameboard type="player" ownShipsList={[]} destroyedShipsList={[]} hittedShipsList={[]} missedShipsList={[]} />
-        <div>
-          <Button>
-            START GAME
-          </Button>
-          <CurrentPlayer>
-            <EnterName id="name" name="name" placeholder="Player name" />
-          </CurrentPlayer>
-        </div>
-      </Screen>
+      <InitialStage />
     );
   }
   // ENDGAME SCREEN
