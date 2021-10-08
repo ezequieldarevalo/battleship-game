@@ -28,8 +28,8 @@ export const BoardGrid = styled.div`
   display: grid;
   border: 1px solid black;
   grid-template-columns: auto auto auto auto auto auto auto auto auto auto;
-  width: 300px;
-  height: 300px;
+  width: 400px;
+  height: 400px;
   @media (max-width: 996px) {
     width: ${({ miniature }:BoardGridProps) => (miniature ? '150px' : '300px')};
     height: ${({ miniature }: BoardGridProps) => (miniature ? '150px' : '300px')};
