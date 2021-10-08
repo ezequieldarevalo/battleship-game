@@ -26,3 +26,10 @@ export const EnterName = styled.input.attrs({ type: 'text' })``;
 export const WinnerName = styled.div``;
 
 export const WinnerDescription = styled.div``;
+
+export const MobilePanel = styled.div`
+  display: none;
+    @media (max-width: 996px) {
+      display: block;
+  }
+`;
