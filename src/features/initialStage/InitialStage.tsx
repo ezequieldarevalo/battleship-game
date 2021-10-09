@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Draggable from 'react-draggable';
 import styled from 'styled-components';
 
@@ -129,6 +129,8 @@ interface ShipShapeProps {
 export const ShipShape = styled.div`
   position: absolute;
   background: grey;
+  border: 1px solid black;
+  box-sizing: border-box;
   width: ${({ vertical, size }: ShipShapeProps) => (vertical ? (GAMEBOARD_WIDTH_DESKTOP / BOARD_SIZE) : ((GAMEBOARD_WIDTH_DESKTOP / BOARD_SIZE) * size))}px;
   height: ${({ vertical, size }: ShipShapeProps) => (!vertical ? (GAMEBOARD_WIDTH_DESKTOP / BOARD_SIZE) : ((GAMEBOARD_WIDTH_DESKTOP / BOARD_SIZE) * size))}px;
   @media (max-width: 996px) {
@@ -140,7 +142,7 @@ export const ShipShape = styled.div`
 function InitialStage() {
   const [playerName, setPlayerName] = useState<string>('');
   const [error, setError] = useState<GAME_ERROR>(noError);
-  const divRef = React.useRef<HTMLDivElement>(null);
+  const divRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [currentShipInfo, setCurrentShipInfo] = useState<SHIP_INFO | null>(null);
   const [carrier, setCarrier] = useState<SHIP_INFO>({
@@ -327,7 +329,7 @@ function InitialStage() {
       ...cruiser3Area,
       ...submarineArea,
     ];
-    if (hasDuplicates(totalArea)) { setError({ has: true, description: 'Overlaped ships' }); }
+    if (hasDuplicates(totalArea)) { setError({ has: true, description: 'Overlaped ships' }); return; }
     // if comes here then send ships to the store
     setError(noError);
     // here sendShips redux function
