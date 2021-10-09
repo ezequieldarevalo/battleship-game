@@ -24,6 +24,39 @@ const CRUISER2_ID = '3';
 const CRUISER3_ID = '4';
 const SUBMARINE_ID = '5';
 
+const isMultiple = (value: number, reference: number): boolean => {
+  const remainder = value % reference;
+  if (remainder === 0) {
+    return true;
+  }
+  return false;
+};
+
+const shipsStraightLinesValidation = (
+  carrierTranslation: number[],
+  cruiser1Translation: number[],
+  cruiser2Translation: number[],
+  cruiser3Translation: number[],
+  submarineTranslation: number[],
+  cellSize: number,
+) => {
+  let valid: boolean = true;
+  const allTranslations: number[] = [
+    ...carrierTranslation,
+    ...cruiser1Translation,
+    ...cruiser2Translation,
+    ...cruiser3Translation,
+    ...submarineTranslation,
+  ];
+  allTranslations.map((translation) => {
+    if (!isMultiple(translation, cellSize)) {
+      valid = false;
+    }
+    return 0;
+  });
+  return valid;
+};
+
 interface ShipShapeProps {
   vertical: boolean;
   size: number;
@@ -34,14 +67,6 @@ function getMovementCoordinatesFromCss(value: string): number[] {
   return [+[...value.matchAll(regexp)][0][1],
     +[...value.matchAll(regexp)][0][2]];
 }
-
-const isMultiple = (value: number, reference: number): boolean => {
-  const remainder = value % reference;
-  if (remainder === 0) {
-    return true;
-  }
-  return false;
-};
 
 export const ShipShape = styled.div`
   position: absolute;
@@ -78,7 +103,6 @@ const noError:IError = {
 function InitialStage() {
   const [error, setError] = useState<IError>(noError);
   const divRef = React.useRef<HTMLDivElement>(null);
-  const carrier1Ref = React.useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [currentShipInfo, setCurrentShipInfo] = useState<IInfoShip | null>(null);
   const [carrier, setCarrier] = useState<IInfoShip>({
@@ -204,32 +228,106 @@ function InitialStage() {
     }, 3000);
   }, []);
 
-  const shipsStraightLinesValidation = (cellSize: number) => {
-    const carrierTransformStyle: string = document.getElementById(CARRIER_ID)?.getAttribute('style') || '';
-    const cruiser1TransformStyle: string = document.getElementById(CRUISER1_ID)?.getAttribute('style') || '';
-    const cruiser2TransformStyle: string = document.getElementById(CRUISER2_ID)?.getAttribute('style') || '';
-    const cruiser3TransformStyle: string = document.getElementById(CRUISER3_ID)?.getAttribute('style') || '';
-    const submarineTransformStyle: string = document.getElementById(SUBMARINE_ID)?.getAttribute('style') || '';
-    let valid: boolean = true;
-    const allTranslations:number[] = [
-      ...getMovementCoordinatesFromCss(carrierTransformStyle),
-      ...getMovementCoordinatesFromCss(cruiser1TransformStyle),
-      ...getMovementCoordinatesFromCss(cruiser2TransformStyle),
-      ...getMovementCoordinatesFromCss(cruiser3TransformStyle),
-      ...getMovementCoordinatesFromCss(submarineTransformStyle)];
-    allTranslations.map((translation) => {
-      if (!isMultiple(translation, cellSize)) {
-        valid = false;
-      }
-      return 0;
-    });
-    return valid;
+  const calculateXEnd = (
+    vertical: boolean,
+    size: number,
+    translation: number,
+    cellSize: number,
+  ) => {
+    let shipLong;
+    if (vertical) shipLong = cellSize;
+    else shipLong = cellSize * size;
+    return shipLong + translation;
   };
 
+  const calculateYEnd = (
+    vertical: boolean,
+    size: number,
+    translation: number,
+    cellSize: number,
+  ) => {
+    let shipLong;
+    if (vertical) shipLong = cellSize * size;
+    else shipLong = cellSize;
+    return shipLong + translation;
+  };
+
+  const shipInGameboard = (
+    ship: IInfoShip,
+    translation: number[],
+    gameboardWidth: number,
+  ): boolean => {
+    const cellSize = gameboardWidth / BOARD_SIZE;
+    let xEnd = 0;
+    let yEnd = 0;
+
+    xEnd = calculateXEnd(
+      ship.vertical, ship.size, translation[0], cellSize,
+    );
+    yEnd = calculateYEnd(
+      ship.vertical, ship.size, translation[1], cellSize,
+    );
+    if (xEnd <= gameboardWidth && yEnd <= gameboardWidth) return true; return false;
+  };
+
+  const getShipArea = (ship: IInfoShip, translation: number[], cellSize: number): number[] => {
+    const shipArea = [];
+    const tens = (translation[1] / cellSize) * 10;
+    const units = (translation[0] / cellSize) + 1;
+    const firstCell = tens + units;
+    shipArea.push(firstCell);
+    let accum = 0;
+    for (let i = 1; i < ship.size; i += 1) {
+      shipArea.push(firstCell + (ship.vertical ? accum += 10 : accum += 1));
+    }
+    return shipArea;
+  };
+
+  function hasDuplicates(arr:number[]) {
+    return new Set(arr).size !== arr.length;
+  }
+
   const sendShips = () => {
-    const CELL_SIZE = (getGameboardWidthFromDOM() - (2 * GAMEBOARD_BORDER)) / BOARD_SIZE;
+    const gameboardWidth = getGameboardWidthFromDOM() - (2 * GAMEBOARD_BORDER);
+    const CELL_SIZE = gameboardWidth / BOARD_SIZE;
+    const carrierTranslation: number[] = getMovementCoordinatesFromCss(document.getElementById(CARRIER_ID)?.getAttribute('style') || '');
+    const cruiser1Translation: number[] = getMovementCoordinatesFromCss(document.getElementById(CRUISER1_ID)?.getAttribute('style') || '');
+    const cruiser2Translation: number[] = getMovementCoordinatesFromCss(document.getElementById(CRUISER2_ID)?.getAttribute('style') || '');
+    const cruiser3Translation: number[] = getMovementCoordinatesFromCss(document.getElementById(CRUISER3_ID)?.getAttribute('style') || '');
+    const submarineTranslation: number[] = getMovementCoordinatesFromCss(document.getElementById(SUBMARINE_ID)?.getAttribute('style') || '');
     // ships in bounds validation
-    if (!shipsStraightLinesValidation(CELL_SIZE)) { setError({ has: true, description: 'StraightLinesFailed' }); }
+    if (!shipsStraightLinesValidation(
+      carrierTranslation,
+      cruiser1Translation,
+      cruiser2Translation,
+      cruiser3Translation,
+      submarineTranslation,
+      CELL_SIZE,
+    )) { setError({ has: true, description: 'StraightLinesFailed' }); }
+
+    // ships in gameboard validation
+    if (!shipInGameboard(carrier, carrierTranslation, gameboardWidth)) { setError({ has: true, description: 'Carrier out of gameboard' }); }
+    if (!shipInGameboard(cruiser1, cruiser1Translation, gameboardWidth)) { setError({ has: true, description: 'Cruiser 1 out of gameboard' }); }
+    if (!shipInGameboard(cruiser2, cruiser2Translation, gameboardWidth)) { setError({ has: true, description: 'Cruiser 2 out of gameboard' }); }
+    if (!shipInGameboard(cruiser3, cruiser3Translation, gameboardWidth)) { setError({ has: true, description: 'Cruiser 3 out of gameboard' }); }
+    if (!shipInGameboard(submarine, submarineTranslation, gameboardWidth)) { setError({ has: true, description: 'Submarine out of gameboard' }); }
+
+    // overlaping validation
+    const carrierArea: number[] = getShipArea(carrier, carrierTranslation, CELL_SIZE);
+    const cruiser1Area: number[] = getShipArea(cruiser1, cruiser1Translation, CELL_SIZE);
+    const cruiser2Area: number[] = getShipArea(cruiser2, cruiser2Translation, CELL_SIZE);
+    const cruiser3Area: number[] = getShipArea(cruiser3, cruiser3Translation, CELL_SIZE);
+    const submarineArea: number[] = getShipArea(submarine, submarineTranslation, CELL_SIZE);
+    const totalArea: number[] = [
+      ...carrierArea,
+      ...cruiser1Area,
+      ...cruiser2Area,
+      ...cruiser3Area,
+      ...submarineArea,
+    ];
+    if (hasDuplicates(totalArea)) { setError({ has: true, description: 'Overlaped ships' }); }
+
+    // if comes here then send ships to the store
   };
 
   return (
@@ -241,7 +339,6 @@ function InitialStage() {
               {carrier.initialized && (
               <Draggable onStart={() => setCurrentShipInfo(carrier)} bounds="parent" defaultPosition={{ x: carrier.initialX, y: carrier.initialY }} grid={[MOVEMENT_SIZE, MOVEMENT_SIZE]} cancel=".btn">
                 <ShipShape
-                  ref={carrier1Ref}
                   className="carrier"
                   onContextMenu={(e: any) => handleChangeOrientationById(carrier.id, e)}
                   vertical={carrier.vertical}
