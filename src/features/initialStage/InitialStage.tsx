@@ -7,6 +7,7 @@ import {
   isMultiple,
   getMovementCoordinatesFromCss,
   hasDuplicates,
+  isValidName,
 } from '../../lib/common/functions';
 
 // CONSTANTS
@@ -137,6 +138,7 @@ export const ShipShape = styled.div`
   `;
 
 function InitialStage() {
+  const [playerName, setPlayerName] = useState<string>('');
   const [error, setError] = useState<GAME_ERROR>(noError);
   const divRef = React.useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -283,6 +285,10 @@ function InitialStage() {
   };
 
   const sendShips = () => {
+    // validate name
+    if (!isValidName(playerName)) {
+      setError({ has: true, description: 'Invalid player name' }); return;
+    }
     // get neccesary data to validations
     const gameboardWidth = getGameboardWidthFromDOM() - (2 * GAMEBOARD_BORDER);
     const CELL_SIZE = gameboardWidth / BOARD_SIZE;
@@ -323,6 +329,7 @@ function InitialStage() {
     ];
     if (hasDuplicates(totalArea)) { setError({ has: true, description: 'Overlaped ships' }); }
     // if comes here then send ships to the store
+    setError(noError);
     // here sendShips redux function
   };
 
@@ -413,7 +420,7 @@ function InitialStage() {
           START GAME
         </Button>
         <CurrentPlayer>
-          <EnterName id="name" name="name" placeholder="Player name" />
+          <EnterName id="name" name="name" value={playerName} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPlayerName(e.target.value)} placeholder="Player name" />
         </CurrentPlayer>
       </div>
     </Screen>

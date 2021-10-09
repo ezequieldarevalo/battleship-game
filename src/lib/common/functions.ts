@@ -13,3 +13,10 @@ export const getMovementCoordinatesFromCss = (value: string): number[] => {
 };
 
 export const hasDuplicates = (arr: number[]) => new Set(arr).size !== arr.length;
+
+export const isValidName = (name: string): boolean => {
+  if (/^[a-zA-Z\s]+$/.test(name)) {
+    return true;
+  }
+  return false;
+};
