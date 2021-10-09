@@ -5,21 +5,21 @@ import {
   GameboardsPanel,
   CurrentPlayer,
   Button,
-  EnterName,
   WinnerName,
   WinnerDescription,
-} from './battleshipStyles';
+} from '../../components/common/styles/screen';
+import InitialStage from '../initialStage/InitialStage';
 
 function Battleship() {
-  const [stage] = useState<string>('game');
+  const [stage] = useState<string>('initial');
 
   // GAME SCREEN
   if (stage === 'game') {
     return (
       <Screen>
         <GameboardsPanel>
-          <Gameboard withName type="player" miniature ownShipsList={[1, 2, 4, 6, 7]} destroyedShipsList={[32, 42, 52, 62]} hittedShipsList={[]} missedShipsList={[]} />
-          <Gameboard withName type="cpu" ownShipsList={[]} destroyedShipsList={[]} hittedShipsList={[50]} missedShipsList={[51]} />
+          <Gameboard id="player" withName type="player" miniature ownShipsList={[1, 2, 4, 6, 7]} destroyedShipsList={[32, 42, 52, 62]} hittedShipsList={[]} missedShipsList={[]} />
+          <Gameboard id="cpu" withName type="cpu" ownShipsList={[]} destroyedShipsList={[]} hittedShipsList={[50]} missedShipsList={[51]} />
         </GameboardsPanel>
         <div>
           <Button>
@@ -34,17 +34,7 @@ function Battleship() {
   // INITIAL SCREEN
   if (stage === 'initial') {
     return (
-      <Screen>
-        <Gameboard type="player" ownShipsList={[]} destroyedShipsList={[]} hittedShipsList={[]} missedShipsList={[]} />
-        <div>
-          <Button>
-            START GAME
-          </Button>
-          <CurrentPlayer>
-            <EnterName id="name" name="name" placeholder="Player name" />
-          </CurrentPlayer>
-        </div>
-      </Screen>
+      <InitialStage />
     );
   }
   // ENDGAME SCREEN

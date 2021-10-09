@@ -34,16 +34,19 @@ const getStateFromIndicators = (
 const cellsList = getInitialCeilsList();
 
 interface IGameboardProps {
+  id: string;
   type: 'player' | 'cpu';
   ownShipsList: number[];
   destroyedShipsList: number[];
   hittedShipsList: number[];
   missedShipsList: number[];
   miniature?: boolean;
-  withName?: boolean
+  withName?: boolean;
+  children?: React.ReactElement;
 }
 
 const Gameboard: React.FunctionComponent<IGameboardProps> = ({
+  id,
   type,
   ownShipsList,
   destroyedShipsList,
@@ -51,24 +54,27 @@ const Gameboard: React.FunctionComponent<IGameboardProps> = ({
   missedShipsList,
   miniature,
   withName,
+  children,
 }) => {
   Gameboard.defaultProps = {
     miniature: false,
     withName: false,
+    children: <></>,
   };
 
-  const getState = (id:number) => {
-    const isOwn = isValueInList(id, ownShipsList);
-    const isDestroyed = isValueInList(id, destroyedShipsList);
-    const isHitted = isValueInList(id, hittedShipsList);
-    const isMissed = isValueInList(id, missedShipsList);
+  const getState = (cellId:number) => {
+    const isOwn = isValueInList(cellId, ownShipsList);
+    const isDestroyed = isValueInList(cellId, destroyedShipsList);
+    const isHitted = isValueInList(cellId, hittedShipsList);
+    const isMissed = isValueInList(cellId, missedShipsList);
     return getStateFromIndicators(isOwn, isDestroyed, isHitted, isMissed);
   };
 
   return (
     <BoardContainer>
       {withName && <BoardTitle>{type}</BoardTitle>}
-      <BoardGrid miniature={miniature}>
+      <BoardGrid id={id} miniature={miniature}>
+        {children}
         {cellsList.map((cellId) => (
           <CellContainer key={cellId} state={getState(cellId)} />
         ))}

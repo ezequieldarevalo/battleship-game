@@ -6,14 +6,13 @@ const getBGColorFromState = (state:string) => {
     case 'hitted': return 'orange';
     case 'destroyed': return 'red';
     case 'missed': return 'skyblue';
-    default: return 'white';
+    default: return 'transparent';
   }
 };
 
 export const BoardContainer = styled.div`
   position: relative;
   float: left;
-  margin: 20px;
 `;
 
 export const BoardTitle = styled.h1`
@@ -24,6 +23,7 @@ interface BoardGridProps {
 }
 
 export const BoardGrid = styled.div`
+  position: relative;
   display: grid;
   border: 1px solid black;
   grid-template-columns: auto auto auto auto auto auto auto auto auto auto;
@@ -39,6 +39,7 @@ interface ICellContainerProps {
   state: 'own' | 'hitted' | 'destroyed' | 'missed' |'none'
 }
 export const CellContainer = styled.div`
+
   border: 1px solid black;
   background: ${({ state }: ICellContainerProps) => getBGColorFromState(state)}
 `;
