@@ -13,7 +13,6 @@ const getBGColorFromState = (state:string) => {
 export const BoardContainer = styled.div`
   position: relative;
   float: left;
-  margin: 20px;
 `;
 
 export const BoardTitle = styled.h1`
