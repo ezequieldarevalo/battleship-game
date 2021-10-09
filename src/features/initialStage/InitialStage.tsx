@@ -1,6 +1,38 @@
 import React, { useState, useEffect } from 'react';
 import Draggable from 'react-draggable';
 import styled from 'styled-components';
+
+// FUNCTIONS
+import {
+  isMultiple,
+  getMovementCoordinatesFromCss,
+  hasDuplicates,
+} from '../../../lib/common/functions';
+
+// CONSTANTS
+import {
+  GAMEBOARD_BORDER,
+  GAMEBOARD_WIDTH_DESKTOP,
+  GAMEBOARD_WIDTH_MOBILE,
+  BOARD_SIZE,
+  MOVEMENT_SIZE,
+  CELL_SIZE_DESKTOP,
+  CELL_SIZE_MOBILE,
+  CARRIER_ID,
+  CRUISER1_ID,
+  CRUISER2_ID,
+  CRUISER3_ID,
+  SUBMARINE_ID,
+  noError,
+} from '../../../lib/common/constants';
+
+// TYPES
+import {
+  GAME_ERROR,
+  SHIP_INFO,
+} from '../../../lib/common/types';
+
+// COMPONENTS
 import Gameboard from '../../components/Gameboard';
 import {
   Screen,
@@ -11,27 +43,12 @@ import {
 } from '../../components/common/styles/screen';
 import LoaderOverlay from '../../components/LoaderOverlay';
 
-const GAMEBOARD_BORDER = 1;
-const GAMEBOARD_WIDTH_DESKTOP = 400;
-const GAMEBOARD_WIDTH_MOBILE = 300;
-const BOARD_SIZE = 10;
-const MOVEMENT_SIZE = 10;
-const CELL_SIZE_DESKTOP = GAMEBOARD_WIDTH_DESKTOP / BOARD_SIZE;
-const CELL_SIZE_MOBILE = GAMEBOARD_WIDTH_MOBILE / BOARD_SIZE;
-const CARRIER_ID = '1';
-const CRUISER1_ID = '2';
-const CRUISER2_ID = '3';
-const CRUISER3_ID = '4';
-const SUBMARINE_ID = '5';
+/// //////////////////
+// LOCAL FUNCTIONS //
+/// //////////////////
 
-const isMultiple = (value: number, reference: number): boolean => {
-  const remainder = value % reference;
-  if (remainder === 0) {
-    return true;
-  }
-  return false;
-};
-
+// this function receives the translation of each ship from (x,y)=(0,0) and
+// check if ships are straight lines
 const shipsStraightLinesValidation = (
   carrierTranslation: number[],
   cruiser1Translation: number[],
@@ -57,15 +74,55 @@ const shipsStraightLinesValidation = (
   return valid;
 };
 
+// function that calculates where the ship ends and check if it is out of gameboard
+// in the X axis
+const calculateXEnd = (
+  vertical: boolean,
+  size: number,
+  translation: number,
+  cellSize: number,
+) => {
+  let shipLong;
+  if (vertical) shipLong = cellSize;
+  else shipLong = cellSize * size;
+  return shipLong + translation;
+};
+
+// function that calculates where the ship ends and check if it is out of gameboard
+// in the Y axis
+const calculateYEnd = (
+  vertical: boolean,
+  size: number,
+  translation: number,
+  cellSize: number,
+) => {
+  let shipLong;
+  if (vertical) shipLong = cellSize * size;
+  else shipLong = cellSize;
+  return shipLong + translation;
+};
+
+// function that calculate all the cellsId what a ship is occupying
+const getShipArea = (ship: SHIP_INFO, translation: number[], cellSize: number): number[] => {
+  const shipArea = [];
+  const tens = (translation[1] / cellSize) * 10;
+  const units = (translation[0] / cellSize) + 1;
+  const firstCell = tens + units;
+  shipArea.push(firstCell);
+  let accum = 0;
+  for (let i = 1; i < ship.size; i += 1) {
+    shipArea.push(firstCell + (ship.vertical ? accum += 10 : accum += 1));
+  }
+  return shipArea;
+};
+
+/// ///////////////////
+// LOCAL COMPONENTS //
+/// ///////////////////
+
 interface ShipShapeProps {
   vertical: boolean;
   size: number;
-}
-
-function getMovementCoordinatesFromCss(value: string): number[] {
-  const regexp = /(\d+)px, (\d+)/g;
-  return [+[...value.matchAll(regexp)][0][1],
-    +[...value.matchAll(regexp)][0][2]];
 }
 
 export const ShipShape = styled.div`
@@ -79,33 +136,12 @@ export const ShipShape = styled.div`
   }
   `;
 
-export type SHIP_SIZE = 2 | 3 | 4;
-
-export interface IInfoShip {
-  id: string;
-  size: SHIP_SIZE;
-  vertical: boolean;
-  initialX: number;
-  initialY: number;
-  initialized: boolean;
-}
-
-interface IError {
-  has: boolean;
-  description: string;
-}
-
-const noError:IError = {
-  has: false,
-  description: '',
-};
-
 function InitialStage() {
-  const [error, setError] = useState<IError>(noError);
+  const [error, setError] = useState<GAME_ERROR>(noError);
   const divRef = React.useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [currentShipInfo, setCurrentShipInfo] = useState<IInfoShip | null>(null);
-  const [carrier, setCarrier] = useState<IInfoShip>({
+  const [currentShipInfo, setCurrentShipInfo] = useState<SHIP_INFO | null>(null);
+  const [carrier, setCarrier] = useState<SHIP_INFO>({
     id: CARRIER_ID,
     size: 4,
     vertical: true,
@@ -113,7 +149,7 @@ function InitialStage() {
     initialY: 0,
     initialized: false,
   });
-  const [cruiser1, setCruiser1] = useState<IInfoShip>({
+  const [cruiser1, setCruiser1] = useState<SHIP_INFO>({
     id: CRUISER1_ID,
     size: 3,
     vertical: true,
@@ -121,7 +157,7 @@ function InitialStage() {
     initialY: 0,
     initialized: false,
   });
-  const [cruiser2, setCruiser2] = useState<IInfoShip>({
+  const [cruiser2, setCruiser2] = useState<SHIP_INFO>({
     id: CRUISER2_ID,
     size: 3,
     vertical: true,
@@ -129,7 +165,7 @@ function InitialStage() {
     initialY: 0,
     initialized: false,
   });
-  const [cruiser3, setCruiser3] = useState<IInfoShip>({
+  const [cruiser3, setCruiser3] = useState<SHIP_INFO>({
     id: CRUISER3_ID,
     size: 3,
     vertical: true,
@@ -137,7 +173,7 @@ function InitialStage() {
     initialY: 0,
     initialized: false,
   });
-  const [submarine, setSubmarine] = useState<IInfoShip>({
+  const [submarine, setSubmarine] = useState<SHIP_INFO>({
     id: SUBMARINE_ID,
     size: 2,
     vertical: true,
@@ -160,38 +196,38 @@ function InitialStage() {
     e.preventDefault();
     switch (id) {
       case CARRIER_ID:
-        setCarrier((prev: IInfoShip) => ({
+        setCarrier((prev: SHIP_INFO) => ({
           ...prev,
           vertical: !prev.vertical,
         }));
         break;
       case CRUISER1_ID:
-        setCruiser1((prev: IInfoShip) => ({
+        setCruiser1((prev: SHIP_INFO) => ({
           ...prev,
           vertical: !prev.vertical,
         }));
         break;
       case CRUISER2_ID:
-        setCruiser2((prev: IInfoShip) => ({
+        setCruiser2((prev: SHIP_INFO) => ({
           ...prev,
           vertical: !prev.vertical,
         }));
         break;
       case CRUISER3_ID:
-        setCruiser3((prev: IInfoShip) => ({
+        setCruiser3((prev: SHIP_INFO) => ({
           ...prev,
           vertical: !prev.vertical,
         }));
         break;
       case SUBMARINE_ID:
-        setSubmarine((prev: IInfoShip) => ({
+        setSubmarine((prev: SHIP_INFO) => ({
           ...prev,
           vertical: !prev.vertical,
         }));
         break;
       default: break;
     }
-    setCurrentShipInfo((prev: IInfoShip | null) => {
+    setCurrentShipInfo((prev: SHIP_INFO | null) => {
       if (prev) {
         return {
           ...prev,
@@ -225,35 +261,11 @@ function InitialStage() {
         ...submarine, initialX: initialCoordinate, initialY: initialCoordinate, initialized: true,
       });
       setLoading(false);
-    }, 3000);
+    }, 2000);
   }, []);
 
-  const calculateXEnd = (
-    vertical: boolean,
-    size: number,
-    translation: number,
-    cellSize: number,
-  ) => {
-    let shipLong;
-    if (vertical) shipLong = cellSize;
-    else shipLong = cellSize * size;
-    return shipLong + translation;
-  };
-
-  const calculateYEnd = (
-    vertical: boolean,
-    size: number,
-    translation: number,
-    cellSize: number,
-  ) => {
-    let shipLong;
-    if (vertical) shipLong = cellSize * size;
-    else shipLong = cellSize;
-    return shipLong + translation;
-  };
-
   const shipInGameboard = (
-    ship: IInfoShip,
+    ship: SHIP_INFO,
     translation: number[],
     gameboardWidth: number,
   ): boolean => {
@@ -270,24 +282,8 @@ function InitialStage() {
     if (xEnd <= gameboardWidth && yEnd <= gameboardWidth) return true; return false;
   };
 
-  const getShipArea = (ship: IInfoShip, translation: number[], cellSize: number): number[] => {
-    const shipArea = [];
-    const tens = (translation[1] / cellSize) * 10;
-    const units = (translation[0] / cellSize) + 1;
-    const firstCell = tens + units;
-    shipArea.push(firstCell);
-    let accum = 0;
-    for (let i = 1; i < ship.size; i += 1) {
-      shipArea.push(firstCell + (ship.vertical ? accum += 10 : accum += 1));
-    }
-    return shipArea;
-  };
-
-  function hasDuplicates(arr:number[]) {
-    return new Set(arr).size !== arr.length;
-  }
-
   const sendShips = () => {
+    // get neccesary data to validations
     const gameboardWidth = getGameboardWidthFromDOM() - (2 * GAMEBOARD_BORDER);
     const CELL_SIZE = gameboardWidth / BOARD_SIZE;
     const carrierTranslation: number[] = getMovementCoordinatesFromCss(document.getElementById(CARRIER_ID)?.getAttribute('style') || '');
@@ -303,15 +299,15 @@ function InitialStage() {
       cruiser3Translation,
       submarineTranslation,
       CELL_SIZE,
-    )) { setError({ has: true, description: 'StraightLinesFailed' }); }
-
+    )) {
+      setError({ has: true, description: 'StraightLinesFailed' }); return;
+    }
     // ships in gameboard validation
-    if (!shipInGameboard(carrier, carrierTranslation, gameboardWidth)) { setError({ has: true, description: 'Carrier out of gameboard' }); }
-    if (!shipInGameboard(cruiser1, cruiser1Translation, gameboardWidth)) { setError({ has: true, description: 'Cruiser 1 out of gameboard' }); }
-    if (!shipInGameboard(cruiser2, cruiser2Translation, gameboardWidth)) { setError({ has: true, description: 'Cruiser 2 out of gameboard' }); }
-    if (!shipInGameboard(cruiser3, cruiser3Translation, gameboardWidth)) { setError({ has: true, description: 'Cruiser 3 out of gameboard' }); }
-    if (!shipInGameboard(submarine, submarineTranslation, gameboardWidth)) { setError({ has: true, description: 'Submarine out of gameboard' }); }
-
+    if (!shipInGameboard(carrier, carrierTranslation, gameboardWidth)) { setError({ has: true, description: 'Carrier out of gameboard' }); return; }
+    if (!shipInGameboard(cruiser1, cruiser1Translation, gameboardWidth)) { setError({ has: true, description: 'Cruiser 1 out of gameboard' }); return; }
+    if (!shipInGameboard(cruiser2, cruiser2Translation, gameboardWidth)) { setError({ has: true, description: 'Cruiser 2 out of gameboard' }); return; }
+    if (!shipInGameboard(cruiser3, cruiser3Translation, gameboardWidth)) { setError({ has: true, description: 'Cruiser 3 out of gameboard' }); return; }
+    if (!shipInGameboard(submarine, submarineTranslation, gameboardWidth)) { setError({ has: true, description: 'Submarine out of gameboard' }); return; }
     // overlaping validation
     const carrierArea: number[] = getShipArea(carrier, carrierTranslation, CELL_SIZE);
     const cruiser1Area: number[] = getShipArea(cruiser1, cruiser1Translation, CELL_SIZE);
@@ -326,8 +322,8 @@ function InitialStage() {
       ...submarineArea,
     ];
     if (hasDuplicates(totalArea)) { setError({ has: true, description: 'Overlaped ships' }); }
-
     // if comes here then send ships to the store
+    // here sendShips redux function
   };
 
   return (
