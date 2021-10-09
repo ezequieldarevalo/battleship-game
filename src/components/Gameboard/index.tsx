@@ -41,8 +41,8 @@ interface IGameboardProps {
   hittedShipsList: number[];
   missedShipsList: number[];
   miniature?: boolean;
-  withName?: boolean
-  children?: React.ReactElement
+  withName?: boolean;
+  children?: React.ReactElement;
 }
 
 const Gameboard: React.FunctionComponent<IGameboardProps> = ({
