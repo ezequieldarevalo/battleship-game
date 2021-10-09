@@ -7,7 +7,7 @@ import {
   isMultiple,
   getMovementCoordinatesFromCss,
   hasDuplicates,
-} from '../../../lib/common/functions';
+} from '../../lib/common/functions';
 
 // CONSTANTS
 import {
@@ -24,13 +24,13 @@ import {
   CRUISER3_ID,
   SUBMARINE_ID,
   noError,
-} from '../../../lib/common/constants';
+} from '../../lib/common/constants';
 
 // TYPES
 import {
   GAME_ERROR,
   SHIP_INFO,
-} from '../../../lib/common/types';
+} from '../../lib/common/types';
 
 // COMPONENTS
 import Gameboard from '../../components/Gameboard';
