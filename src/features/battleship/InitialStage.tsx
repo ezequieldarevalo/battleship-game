@@ -2,6 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import Draggable from 'react-draggable';
 import styled from 'styled-components';
 
+import { useAppDispatch } from '../../app/hooks';
+import {
+  begin,
+  IBegin,
+} from './battleshipSlice';
+
 // FUNCTIONS
 import {
   isMultiple,
@@ -140,6 +146,7 @@ export const ShipShape = styled.div`
   `;
 
 function InitialStage() {
+  const dispatch = useAppDispatch();
   const [playerName, setPlayerName] = useState<string>('');
   const [error, setError] = useState<GAME_ERROR>(noError);
   const divRef = useRef<HTMLDivElement>(null);
@@ -332,7 +339,18 @@ function InitialStage() {
     if (hasDuplicates(totalArea)) { setError({ has: true, description: 'Overlaped ships' }); return; }
     // if comes here then send ships to the store
     setError(noError);
-    // here sendShips redux function
+    // here dispatch begin with name and ownShips (player)
+    const beginData: IBegin = {
+      name: playerName,
+      ownShips: [
+        carrierArea,
+        cruiser1Area,
+        cruiser2Area,
+        cruiser3Area,
+        submarineArea,
+      ],
+    };
+    dispatch(begin(beginData));
   };
 
   return (
