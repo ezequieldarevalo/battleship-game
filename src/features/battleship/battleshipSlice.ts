@@ -1,13 +1,19 @@
 // import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store';
+import { initialGameboardState } from '../../lib/common/constants';
 import { SHIP_AREA, ICellState } from '../../lib/common/types';
-import { initializeGameboardState, generateRandomOwnShips } from './functions';
+import { initializeGameboardState, generateRandomOwnShips, getGameboardStateAfterHit } from './functions';
 
 type TPlayer = {
   name: string;
   ownShips: SHIP_AREA[];
   gameboardState: ICellState[];
+}
+
+type THit = {
+  cellId: number;
+  player: 'human' | 'cpu'
 }
 
 export interface IBegin {
@@ -69,6 +75,19 @@ export const battleshipSlice = createSlice({
       state.cpuPlayer.ownShips = cpuShips;
       state.cpuPlayer.gameboardState = initializeGameboardState(cpuShips);
       state.stage = 'game';
+    },
+    hit: (state, action: PayloadAction<THit>) => {
+      // when human choose a target cell (cpu cell)
+      if (action.payload.player === 'cpu') {
+        state.cpuPlayer.gameboardState = getGameboardStateAfterHit(
+          action.payload.cellId,
+          state.cpuPlayer.gameboardState,
+          state.cpuPlayer.ownShips,
+        );
+      } else {
+      // when is the cpu hit action
+        state.humanPlayer.gameboardState = initialGameboardState;
+      }
     },
     // decrement: (state) => {
     //   state.value -= 1;

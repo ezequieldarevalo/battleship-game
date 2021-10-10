@@ -107,3 +107,52 @@ export const generateRandomOwnShips = (newShipSizeList: number[]): SHIP_AREA[] =
   }
   return newShipsList;
 };
+
+const updateShipDestroyed = (
+  gameboardState: ICellState[],
+  ownShip: SHIP_AREA,
+) => {
+  const newGameboardState:ICellState[] = gameboardState;
+  ownShip.map((id:number) => {
+    newGameboardState[id - 1] = { ...gameboardState[id - 1], state: 'destroyed' };
+    return 0;
+  });
+  return newGameboardState;
+};
+
+export const getGameboardStateAfterHit = (
+  cellId: number,
+  gameboardState: ICellState[],
+  ownShips: SHIP_AREA[],
+): ICellState[] => {
+  let newGameboardState = gameboardState;
+  let newCellState: ICellState;
+  const actualCell:ICellState = gameboardState[cellId - 1];
+  if (actualCell.state === 'none') {
+    newCellState = {
+      ...actualCell,
+      state: 'missed',
+    };
+    newGameboardState[cellId - 1] = newCellState;
+  } else {
+    // ownShip case
+    // destroyed if it is the last healthy cell and hitted if not
+    // if destroyed so update other cells of that ship
+    const shipArea = ownShips[cellId - 1];
+    const healthyCells: number[] = [];
+    shipArea.map((id) => {
+      if (gameboardState[id - 1].state === 'own') healthyCells.push(id);
+      return 0;
+    });
+    if (healthyCells.length === 1) {
+      newGameboardState = updateShipDestroyed(gameboardState, shipArea);
+    } else {
+      newCellState = {
+        ...actualCell,
+        state: 'hitted',
+      };
+      newGameboardState[cellId - 1] = newCellState;
+    }
+  }
+  return newGameboardState;
+};
