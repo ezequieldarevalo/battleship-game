@@ -37,10 +37,10 @@ export const BoardGrid = styled.div`
 `;
 
 interface ICellContainerProps {
-  state: CELL_STATE
+  state: CELL_STATE,
+  type: 'player' | 'cpu'
 }
 export const CellContainer = styled.div`
-
   border: 1px solid black;
   background: ${({ state }: ICellContainerProps) => getBGColorFromState(state)}
 `;
