@@ -1,16 +1,19 @@
 // import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store';
-import { SHIP_AREA } from '../../lib/common/types';
+import { SHIP_AREA, ICellState } from '../../lib/common/types';
+import { initializeGameboardState } from './functions';
 
 type TPlayer = {
   name: string;
-  ownShips: SHIP_AREA[]
+  ownShips: SHIP_AREA[];
+  gameboardState: ICellState[];
 }
 
 export interface IBegin {
   name: string;
-  ownShips: SHIP_AREA[]
+  ownShips: SHIP_AREA[],
+
 }
 
 export interface BattleshipState {
@@ -25,6 +28,7 @@ const initialState: BattleshipState = {
   player: {
     name: '',
     ownShips: [],
+    gameboardState: [],
   },
 };
 
@@ -54,6 +58,7 @@ export const battleshipSlice = createSlice({
       // immutable state based off those changes
       state.player.ownShips = action.payload.ownShips;
       state.player.name = action.payload.name;
+      state.player.gameboardState = initializeGameboardState(action.payload.ownShips);
       state.stage = 'game';
     },
     // decrement: (state) => {
