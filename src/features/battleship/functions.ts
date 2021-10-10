@@ -8,9 +8,10 @@ function getRandomInt(min:number, max:number) {
 
 const fillNullCells = (gameboardState: ICellState[]): ICellState[] => {
   const newGameboardState = gameboardState;
-  for (let i = 1; i <= 100; i += 1) {
+  for (let i = 0; i < 100; i += 1) {
     if (!newGameboardState[i]) {
       const noneCellState: ICellState = {
+        id: i + 1,
         state: 'none',
         shipId: -1,
       };
@@ -25,6 +26,7 @@ export const initializeGameboardState = (shipsList: SHIP_AREA[]): ICellState[] =
   shipsList.map((shipArea, index) => {
     shipArea.map((cellId) => {
       const newState: ICellState = {
+        id: cellId,
         state: 'own',
         shipId: index + 1,
       };

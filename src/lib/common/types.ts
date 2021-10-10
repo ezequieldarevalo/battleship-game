@@ -16,7 +16,10 @@ export type GAME_ERROR ={
 
 export type SHIP_AREA = number[]
 
+export type CELL_STATE = 'none' | 'missed' | 'own' | 'hitted' | 'destroyed'
+
 export interface ICellState {
-  state: 'none' | 'water' | 'own' | 'hitted' | 'destroyed';
+  id: number;
+  state: CELL_STATE;
   shipId: number;
 }
