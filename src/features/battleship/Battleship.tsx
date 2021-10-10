@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Gameboard from '../../components/Gameboard';
 import {
   Screen,
@@ -8,18 +8,28 @@ import {
   WinnerName,
   WinnerDescription,
 } from '../../components/common/styles/screen';
-import InitialStage from '../initialStage/InitialStage';
+import InitialStage from './InitialStage';
+import { useAppSelector } from '../../app/hooks';
+// import { selectPlayer, selectStage } from './battleshipSlice';
+import { selectStage, selectHumanPlayer, selectCpuPlayer } from './battleshipSlice';
+import { BEGIN_STAGE, GAME_STAGE } from '../../lib/common/constants';
 
 function Battleship() {
-  const [stage] = useState<string>('initial');
+  const stage = useAppSelector(selectStage);
+  const playerInfo = useAppSelector(selectHumanPlayer);
+  const cpuInfo = useAppSelector(selectCpuPlayer);
+  console.log(playerInfo);
+  console.log(cpuInfo);
+
+  // const ownShipTotalArea = getOwnCellShipsFromShipsList(playerInfo.ownShips);
 
   // GAME SCREEN
-  if (stage === 'game') {
+  if (stage === GAME_STAGE) {
     return (
       <Screen>
         <GameboardsPanel>
-          <Gameboard id="player" withName type="player" miniature ownShipsList={[1, 2, 4, 6, 7]} destroyedShipsList={[32, 42, 52, 62]} hittedShipsList={[]} missedShipsList={[]} />
-          <Gameboard id="cpu" withName type="cpu" ownShipsList={[]} destroyedShipsList={[]} hittedShipsList={[50]} missedShipsList={[51]} />
+          <Gameboard id={playerInfo.name} withName type="player" miniature gameState={playerInfo.gameboardState} />
+          <Gameboard id={cpuInfo.name} withName type="cpu" gameState={cpuInfo.gameboardState} />
         </GameboardsPanel>
         <div>
           <Button>
@@ -32,7 +42,7 @@ function Battleship() {
   }
 
   // INITIAL SCREEN
-  if (stage === 'initial') {
+  if (stage === BEGIN_STAGE) {
     return (
       <InitialStage />
     );

@@ -13,3 +13,13 @@ export type GAME_ERROR ={
   has: boolean;
   description: string;
 }
+
+export type SHIP_AREA = number[]
+
+export type CELL_STATE = 'none' | 'missed' | 'own' | 'hitted' | 'destroyed'
+
+export interface ICellState {
+  id: number;
+  state: CELL_STATE;
+  shipId: number;
+}

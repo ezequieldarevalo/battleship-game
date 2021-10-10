@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { CELL_STATE } from '../../lib/common/types';
 
 const getBGColorFromState = (state:string) => {
   switch (state) {
@@ -36,10 +37,10 @@ export const BoardGrid = styled.div`
 `;
 
 interface ICellContainerProps {
-  state: 'own' | 'hitted' | 'destroyed' | 'missed' |'none'
+  state: CELL_STATE,
+  type: 'player' | 'cpu'
 }
 export const CellContainer = styled.div`
-
   border: 1px solid black;
   background: ${({ state }: ICellContainerProps) => getBGColorFromState(state)}
 `;
