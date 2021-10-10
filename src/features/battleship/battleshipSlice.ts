@@ -105,7 +105,27 @@ export const battleshipSlice = createSlice({
         }
       } else {
       // when is the cpu hit action
-        const idToHit = emulateIdToHitChoice(state.humanPlayer.gameboardState);
+        const availableCells: number[] = [];
+        state.humanPlayer.gameboardState.map(
+          (cell: ICellState) => {
+            if (cell.state === NONE) availableCells.push(cell.id);
+            return 0;
+          },
+        );
+        const hittedShips: SHIP_AREA[] = [];
+        state.humanPlayer.ownShips.map((ship) => {
+          const newShip: SHIP_AREA = [];
+          ship.map((cellId:number) => {
+            if (state.humanPlayer.gameboardState.find(
+              (element) => element.id === cellId,
+            ) !== undefined) { newShip.push(cellId); }
+            return 0;
+          });
+          hittedShips.push(newShip);
+          return 0;
+        });
+
+        const idToHit = emulateIdToHitChoice(hittedShips, availableCells);
         const gameboardAfterHit = getGameboardStateAfterHit(
           idToHit,
           state.humanPlayer.gameboardState,

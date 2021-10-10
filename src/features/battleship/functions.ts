@@ -46,7 +46,7 @@ const exceedTens = (orientation: string, size: number, cellId: number) => {
   if (orientation === 'vertical') return false;
   const units = cellId % 10;
   const lastCellOfShip = units + size;
-  if (lastCellOfShip > 10) return true;
+  if (lastCellOfShip > 10 || units === 0) return true;
   return false;
 };
 
@@ -159,7 +159,114 @@ export const getGameboardStateAfterHit = (
   return newGameboardState;
 };
 
-export const emulateIdToHitChoice = (gameboardState: ICellState[]): number => {
-  console.log(gameboardState);
-  return 1;
+const isCellAble = (shipArea: SHIP_AREA, direction: string, availableCells:number[]): boolean => {
+  let referenceValue: number;
+  switch (direction) {
+    case 'top':
+      referenceValue = Math.min(...shipArea);
+      return (referenceValue >= 10 && availableCells.includes(referenceValue - 10));
+    case 'down':
+      referenceValue = Math.max(...shipArea);
+      return (referenceValue <= 90 && availableCells.includes(referenceValue + 10));
+    case 'left':
+      referenceValue = Math.min(...shipArea);
+      return (referenceValue >= 1 && availableCells.includes(referenceValue - 1));
+    case 'right':
+      referenceValue = Math.max(...shipArea);
+      return (referenceValue <= 100 && availableCells.includes(referenceValue + 1));
+    default: return false;
+  }
+};
+
+const getTargetCellValueFromDirection = (shipArea: SHIP_AREA, direction: string): number => {
+  switch (direction) {
+    case 'top':
+      return Math.min(...shipArea) - 10;
+    case 'down':
+      return Math.max(...shipArea) + 10;
+    case 'left':
+      return Math.min(...shipArea) - 1;
+    case 'right':
+      return Math.max(...shipArea) + 1;
+    default: return -1;
+  }
+};
+
+interface IGetMostHittedShipReturnValue {
+  area: SHIP_AREA;
+  index: number;
+}
+
+const getMostHittedShip = (hittedShips: SHIP_AREA[]): IGetMostHittedShipReturnValue => {
+  let maxSize = 0;
+  let idMaxSize = -1;
+  hittedShips.map((ship:SHIP_AREA, index) => {
+    if (ship.length > maxSize) {
+      maxSize = ship.length;
+      idMaxSize = index;
+    }
+    return 0;
+  });
+  return { area: hittedShips[idMaxSize], index: idMaxSize };
+};
+
+const getOrientationFromValues = (cellId1: number, cellId2: number) => {
+  if ((cellId2 - cellId1) === 10) return 'vertical';
+  return 'horizontal';
+};
+
+export const emulateIdToHitChoice = (
+  hittedShips: SHIP_AREA[],
+  availableCells: number[],
+): number => {
+  let orientation;
+  const localHittedShips = hittedShips;
+  let mostHittedShipArea = [0];
+  let chosenOption = 'none';
+  let invalid = true;
+  while (invalid && localHittedShips.length > 0) {
+    const mostHittedShip = getMostHittedShip(localHittedShips);
+    mostHittedShipArea = mostHittedShip.area;
+    if (mostHittedShipArea.length === 0) return getRandomInt(1, 101);
+    invalid = false;
+    if (mostHittedShipArea.length === 1) orientation = 'unknown';
+    if (mostHittedShipArea.length > 1) {
+      orientation = getOrientationFromValues(
+        mostHittedShipArea[0],
+        mostHittedShipArea[1],
+      );
+    }
+    let isTopAble = isCellAble(mostHittedShipArea, 'top', availableCells);
+    let isDownAble = isCellAble(mostHittedShipArea, 'down', availableCells);
+    let isLeftAble = isCellAble(mostHittedShipArea, 'left', availableCells);
+    let isRightAble = isCellAble(mostHittedShipArea, 'right', availableCells);
+    if (orientation === 'vertical') {
+      isLeftAble = false;
+      isRightAble = false;
+    }
+    if (orientation === 'horizontal') {
+      isTopAble = false;
+      isDownAble = false;
+    }
+    const posibilities: string[] = [];
+    if (isTopAble) posibilities.push('top');
+    if (isDownAble) posibilities.push('down');
+    if (isLeftAble) posibilities.push('left');
+    if (isRightAble) posibilities.push('right');
+
+    if (posibilities.length === 0) {
+      invalid = true;
+      localHittedShips.splice(mostHittedShip.index, 1);
+    } else {
+      chosenOption = posibilities[
+        Math.floor(Math.random() * posibilities.length)
+      ];
+    }
+  }
+  if (mostHittedShipArea !== [0] && chosenOption !== 'none') { return getTargetCellValueFromDirection(mostHittedShipArea, chosenOption); }
+
+  const randomAvailableCell = availableCells[
+    Math.floor(Math.random() * availableCells.length)
+  ];
+  return randomAvailableCell;
 };
