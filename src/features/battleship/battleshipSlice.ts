@@ -2,7 +2,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store';
 import { SHIP_AREA, ICellState } from '../../lib/common/types';
-import { initializeGameboardState } from './functions';
+import { initializeGameboardState, generateRandomOwnShips } from './functions';
 
 type TPlayer = {
   name: string;
@@ -19,14 +19,20 @@ export interface IBegin {
 export interface BattleshipState {
   stage: 'initial' | 'game' | 'end';
   status: 'idle' | 'loading';
-  player: TPlayer;
+  humanPlayer: TPlayer;
+  cpuPlayer: TPlayer;
 }
 
 const initialState: BattleshipState = {
   stage: 'initial',
   status: 'idle',
-  player: {
+  humanPlayer: {
     name: '',
+    ownShips: [],
+    gameboardState: [],
+  },
+  cpuPlayer: {
+    name: 'CPU',
     ownShips: [],
     gameboardState: [],
   },
@@ -56,9 +62,12 @@ export const battleshipSlice = createSlice({
       // doesn't actually mutate the state because it uses the Immer library,
       // which detects changes to a "draft state" and produces a brand new
       // immutable state based off those changes
-      state.player.ownShips = action.payload.ownShips;
-      state.player.name = action.payload.name;
-      state.player.gameboardState = initializeGameboardState(action.payload.ownShips);
+      const cpuShips:SHIP_AREA[] = generateRandomOwnShips([4, 3, 3, 3, 2]);
+      state.humanPlayer.ownShips = action.payload.ownShips;
+      state.humanPlayer.name = action.payload.name;
+      state.humanPlayer.gameboardState = initializeGameboardState(action.payload.ownShips);
+      state.cpuPlayer.ownShips = cpuShips;
+      state.cpuPlayer.gameboardState = initializeGameboardState(cpuShips);
       state.stage = 'game';
     },
     // decrement: (state) => {
@@ -88,7 +97,8 @@ export const { begin } = battleshipSlice.actions;
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of
 // in the slice file. For example: `useSelector((state: RootState) => state.counter.value)`
-export const selectPlayer = (state: RootState) => state.battleship.player;
+export const selectHumanPlayer = (state: RootState) => state.battleship.humanPlayer;
+export const selectCpuPlayer = (state: RootState) => state.battleship.cpuPlayer;
 export const selectStage = (state: RootState) => state.battleship.stage;
 
 // We can also write thunks by hand, which may contain both sync and async logic.
