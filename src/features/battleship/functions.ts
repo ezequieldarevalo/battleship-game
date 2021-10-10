@@ -1,5 +1,7 @@
 import { SHIP_AREA, ICellState } from '../../lib/common/types';
-import { ORIENTATION_OPTIONS_ARRAY } from '../../lib/common/constants';
+import {
+  ORIENTATION_OPTIONS_ARRAY, DESTROYED, OWN, NONE, HITTED, MISSED,
+} from '../../lib/common/constants';
 
 function getRandomInt(min:number, max:number) {
   return Math.floor(Math.random() * (max - min)) + min;
@@ -11,7 +13,7 @@ const fillNullCells = (gameboardState: ICellState[]): ICellState[] => {
     if (!newGameboardState[i]) {
       const noneCellState: ICellState = {
         id: i + 1,
-        state: 'none',
+        state: NONE,
         shipId: -1,
       };
       newGameboardState[i] = noneCellState;
@@ -27,7 +29,7 @@ export const initializeGameboardState = (shipsList: SHIP_AREA[]): ICellState[] =
     shipArea.map((cellId) => {
       const newState: ICellState = {
         id: cellId,
-        state: 'own',
+        state: OWN,
         shipId: index + 1,
       };
       gameboardState[cellId - 1] = newState;
@@ -114,7 +116,7 @@ const updateShipDestroyed = (
 ) => {
   const newGameboardState:ICellState[] = gameboardState;
   ownShip.map((id:number) => {
-    newGameboardState[id - 1] = { ...gameboardState[id - 1], state: 'destroyed' };
+    newGameboardState[id - 1] = { ...gameboardState[id - 1], state: DESTROYED };
     return 0;
   });
   return newGameboardState;
@@ -128,10 +130,10 @@ export const getGameboardStateAfterHit = (
   let newGameboardState = gameboardState;
   let newCellState: ICellState;
   const actualCell:ICellState = gameboardState[cellId - 1];
-  if (actualCell.state === 'none') {
+  if (actualCell.state === NONE) {
     newCellState = {
       ...actualCell,
-      state: 'missed',
+      state: MISSED,
     };
     newGameboardState[cellId - 1] = newCellState;
   } else {
@@ -141,7 +143,7 @@ export const getGameboardStateAfterHit = (
     const shipArea = ownShips[cellId - 1];
     const healthyCells: number[] = [];
     shipArea.map((id) => {
-      if (gameboardState[id - 1].state === 'own') healthyCells.push(id);
+      if (gameboardState[id - 1].state === OWN) healthyCells.push(id);
       return 0;
     });
     if (healthyCells.length === 1) {
@@ -149,10 +151,15 @@ export const getGameboardStateAfterHit = (
     } else {
       newCellState = {
         ...actualCell,
-        state: 'hitted',
+        state: HITTED,
       };
       newGameboardState[cellId - 1] = newCellState;
     }
   }
   return newGameboardState;
+};
+
+export const emulateIdToHitChoice = (gameboardState: ICellState[]): number => {
+  console.log(gameboardState);
+  return 1;
 };

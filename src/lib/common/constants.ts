@@ -1,5 +1,15 @@
 import { GAME_ERROR, ICellState } from './types';
 
+export const DESTROYED = 'destroyed';
+export const OWN = 'own';
+export const NONE = 'none';
+export const HITTED = 'hitted';
+export const MISSED = 'missed';
+export const BEGIN_STAGE = 'beginStage';
+export const GAME_STAGE = 'gameStage';
+export const END_STAGE = 'endStage';
+export const CPU = 'cpu';
+export const PLAYER = 'player';
 export const GAMEBOARD_BORDER = 1;
 export const GAMEBOARD_WIDTH_DESKTOP = 400;
 export const GAMEBOARD_WIDTH_MOBILE = 300;

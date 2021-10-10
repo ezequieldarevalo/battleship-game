@@ -1,14 +1,19 @@
 // import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store';
-import { initialGameboardState } from '../../lib/common/constants';
 import { SHIP_AREA, ICellState } from '../../lib/common/types';
-import { initializeGameboardState, generateRandomOwnShips, getGameboardStateAfterHit } from './functions';
+import {
+  initializeGameboardState, generateRandomOwnShips, getGameboardStateAfterHit, emulateIdToHitChoice,
+} from './functions';
+import {
+  BEGIN_STAGE, DESTROYED, END_STAGE, GAME_STAGE, NONE, CPU, PLAYER,
+} from '../../lib/common/constants';
 
 type TPlayer = {
   name: string;
   ownShips: SHIP_AREA[];
   gameboardState: ICellState[];
+  numberOfShips: number;
 }
 
 type THit = {
@@ -23,25 +28,29 @@ export interface IBegin {
 }
 
 export interface BattleshipState {
-  stage: 'initial' | 'game' | 'end';
+  stage: 'beginStage' | 'gameStage' | 'endStage';
   status: 'idle' | 'loading';
   humanPlayer: TPlayer;
   cpuPlayer: TPlayer;
+  winner: 'none' | 'cpu' | 'player'
 }
 
 const initialState: BattleshipState = {
-  stage: 'initial',
+  stage: BEGIN_STAGE,
   status: 'idle',
   humanPlayer: {
     name: '',
     ownShips: [],
     gameboardState: [],
+    numberOfShips: 0,
   },
   cpuPlayer: {
     name: 'CPU',
     ownShips: [],
     gameboardState: [],
+    numberOfShips: 0,
   },
+  winner: NONE,
 };
 
 // The function below is called a thunk and allows us to perform async logic. It
@@ -74,19 +83,44 @@ export const battleshipSlice = createSlice({
       state.humanPlayer.gameboardState = initializeGameboardState(action.payload.ownShips);
       state.cpuPlayer.ownShips = cpuShips;
       state.cpuPlayer.gameboardState = initializeGameboardState(cpuShips);
-      state.stage = 'game';
+      state.stage = GAME_STAGE;
     },
     hit: (state, action: PayloadAction<THit>) => {
       // when human choose a target cell (cpu cell)
-      if (action.payload.player === 'cpu') {
-        state.cpuPlayer.gameboardState = getGameboardStateAfterHit(
+      if (action.payload.player === CPU) {
+        const gameboardAfterHit = getGameboardStateAfterHit(
           action.payload.cellId,
           state.cpuPlayer.gameboardState,
           state.cpuPlayer.ownShips,
         );
+        // check if is the end of the game
+        const cellsDestroyed = gameboardAfterHit.filter((element) => element.state === DESTROYED);
+        // the end
+        if (cellsDestroyed.length === state.cpuPlayer.numberOfShips) {
+          state.winner = PLAYER;
+          state.stage = END_STAGE;
+        } else {
+          // continue playing
+          state.cpuPlayer.gameboardState = gameboardAfterHit;
+        }
       } else {
       // when is the cpu hit action
-        state.humanPlayer.gameboardState = initialGameboardState;
+        const idToHit = emulateIdToHitChoice(state.humanPlayer.gameboardState);
+        const gameboardAfterHit = getGameboardStateAfterHit(
+          idToHit,
+          state.humanPlayer.gameboardState,
+          state.humanPlayer.ownShips,
+        );
+        // check if is the end of the game
+        const cellsDestroyed = gameboardAfterHit.filter((element) => element.state === DESTROYED);
+        // the end
+        if (cellsDestroyed.length === state.humanPlayer.numberOfShips) {
+          state.winner = CPU;
+          state.stage = END_STAGE;
+        } else {
+          // continue playing
+          state.humanPlayer.gameboardState = gameboardAfterHit;
+        }
       }
     },
     // decrement: (state) => {
