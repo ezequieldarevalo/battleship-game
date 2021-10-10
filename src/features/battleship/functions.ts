@@ -207,6 +207,9 @@ const getMostHittedShip = (hittedShips: SHIP_AREA[]): IGetMostHittedShipReturnVa
     }
     return 0;
   });
+  if (idMaxSize === -1) {
+    return { area: [], index: 0 };
+  }
   return { area: hittedShips[idMaxSize], index: idMaxSize };
 };
 
@@ -215,6 +218,7 @@ const getOrientationFromValues = (cellId1: number, cellId2: number) => {
   return 'horizontal';
 };
 
+// discard not able target cells and choose one from the rest
 export const emulateIdToHitChoice = (
   hittedShips: SHIP_AREA[],
   availableCells: number[],
@@ -224,6 +228,7 @@ export const emulateIdToHitChoice = (
   let mostHittedShipArea = [0];
   let chosenOption = 'none';
   let invalid = true;
+
   while (invalid && localHittedShips.length > 0) {
     const mostHittedShip = getMostHittedShip(localHittedShips);
     mostHittedShipArea = mostHittedShip.area;
@@ -263,7 +268,10 @@ export const emulateIdToHitChoice = (
       ];
     }
   }
-  if (mostHittedShipArea !== [0] && chosenOption !== 'none') { return getTargetCellValueFromDirection(mostHittedShipArea, chosenOption); }
+
+  if (chosenOption !== 'none') {
+    return getTargetCellValueFromDirection(mostHittedShipArea, chosenOption);
+  }
 
   const randomAvailableCell = availableCells[
     Math.floor(Math.random() * availableCells.length)
