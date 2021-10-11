@@ -34,6 +34,7 @@ export interface BattleshipState {
   cpuPlayer: TPlayer;
   winner: 'none' | 'cpu' | 'player'
   message: string;
+  activePlayer: 'human' | 'cpu'
 }
 
 const initialState: BattleshipState = {
@@ -51,6 +52,7 @@ const initialState: BattleshipState = {
   },
   winner: NONE,
   message: '',
+  activePlayer: 'human',
 };
 
 // The function below is called a thunk and allows us to perform async logic. It
@@ -106,6 +108,7 @@ export const battleshipSlice = createSlice({
           // continue playing
           state.message = getMessageByHitResult('human', resultAfterHit.hitResult);
           state.cpuPlayer.gameboardState = gameboardAfterHit;
+          state.activePlayer = 'cpu';
         }
       } else {
         // when is the cpu hit action
@@ -146,6 +149,7 @@ export const battleshipSlice = createSlice({
           // continue playing
           state.message = getMessageByHitResult('cpu', resultAfterHit.hitResult);
           state.humanPlayer.gameboardState = gameboardAfterHit;
+          state.activePlayer = 'human';
         }
       }
     },
@@ -180,6 +184,7 @@ export const selectHumanPlayer = (state: RootState) => state.battleship.humanPla
 export const selectCpuPlayer = (state: RootState) => state.battleship.cpuPlayer;
 export const selectStage = (state: RootState) => state.battleship.stage;
 export const selectMessage = (state: RootState) => state.battleship.message;
+export const selectActivePlayer = (state: RootState) => state.battleship.activePlayer;
 
 // We can also write thunks by hand, which may contain both sync and async logic.
 // Here's an example of conditionally dispatching actions based on current state.
