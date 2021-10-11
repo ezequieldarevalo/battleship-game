@@ -122,13 +122,18 @@ const updateShipDestroyed = (
   return newGameboardState;
 };
 
+interface IAFTERHIT {
+  gameboard: ICellState[];
+  hitResult: 'missed' | 'hitted' | 'destroyed';
+}
+
 export const getGameboardStateAfterHit = (
   cellId: number,
   gameboardState: ICellState[],
   ownShips: SHIP_AREA[],
-): ICellState[] => {
-  console.log(cellId);
+): IAFTERHIT => {
   let newGameboardState = gameboardState;
+  let newHitResult:'missed' | 'hitted' | 'destroyed';
   let newCellState: ICellState;
   const actualCell:ICellState = gameboardState[cellId - 1];
   if (actualCell.state === NONE) {
@@ -136,6 +141,7 @@ export const getGameboardStateAfterHit = (
       ...actualCell,
       state: MISSED,
     };
+    newHitResult = 'missed';
     newGameboardState[cellId - 1] = newCellState;
   } else {
     // ownShip case
@@ -152,15 +158,17 @@ export const getGameboardStateAfterHit = (
     });
     if (healthyCells.length === 1) {
       newGameboardState = updateShipDestroyed(gameboardState, shipArea);
+      newHitResult = 'destroyed';
     } else {
       newCellState = {
         ...actualCell,
         state: HITTED,
       };
+      newHitResult = 'hitted';
       newGameboardState[cellId - 1] = newCellState;
     }
   }
-  return newGameboardState;
+  return { gameboard: newGameboardState, hitResult: newHitResult };
 };
 
 const isCellAble = (shipArea: SHIP_AREA, direction: string, availableCells:number[]): boolean => {
@@ -285,4 +293,14 @@ export const emulateIdToHitChoice = (
     Math.floor(Math.random() * availableCells.length)
   ];
   return randomAvailableCell;
+};
+
+export const getMessageByHitResult = (player: 'human' | 'cpu', hitResult: 'missed' | 'hitted' | 'destroyed') => {
+  switch (hitResult) {
+    case 'missed':
+      return `${player} has missed`;
+    case 'hitted':
+      return `${player} hitted a ship`;
+    default: return `${player} destroyed a ship`;
+  }
 };

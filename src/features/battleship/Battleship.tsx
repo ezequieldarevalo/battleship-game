@@ -11,15 +11,19 @@ import {
 import InitialStage from './InitialStage';
 import { useAppSelector } from '../../app/hooks';
 // import { selectPlayer, selectStage } from './battleshipSlice';
-import { selectStage, selectHumanPlayer, selectCpuPlayer } from './battleshipSlice';
+import {
+  selectStage, selectHumanPlayer, selectCpuPlayer, selectMessage,
+} from './battleshipSlice';
 import { BEGIN_STAGE, GAME_STAGE } from '../../lib/common/constants';
 
 function Battleship() {
   const stage = useAppSelector(selectStage);
   const playerInfo = useAppSelector(selectHumanPlayer);
   const cpuInfo = useAppSelector(selectCpuPlayer);
+  const message:any = useAppSelector(selectMessage);
   console.log(playerInfo);
   console.log(cpuInfo);
+  // const [showMessage, setShowMessage] = useState<boolean>(false);
 
   // const ownShipTotalArea = getOwnCellShipsFromShipsList(playerInfo.ownShips);
 
@@ -36,6 +40,9 @@ function Battleship() {
             SURRENDER
           </Button>
           <CurrentPlayer>Playing: Player</CurrentPlayer>
+        </div>
+        <div>
+          {message}
         </div>
       </Screen>
     );
