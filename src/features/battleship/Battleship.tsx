@@ -6,12 +6,19 @@ import {
   CurrentPlayer,
   Button,
   WinnerName,
-  WinnerDescription,
 } from '../../components/common/styles/screen';
 import InitialStage from './InitialStage';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import {
-  selectStage, selectHumanPlayer, selectCpuPlayer, selectMessage, selectActivePlayer, hit,
+  selectStage,
+  selectHumanPlayer,
+  selectCpuPlayer,
+  selectMessage,
+  selectActivePlayer,
+  selectWinner,
+  hit,
+  surrender,
+  restart,
 } from './battleshipSlice';
 import { BEGIN_STAGE, GAME_STAGE } from '../../lib/common/constants';
 
@@ -21,6 +28,7 @@ function Battleship() {
   const cpuInfo = useAppSelector(selectCpuPlayer);
   const message = useAppSelector(selectMessage);
   const activePlayer = useAppSelector(selectActivePlayer);
+  const winner = useAppSelector(selectWinner);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -38,7 +46,7 @@ function Battleship() {
           <Gameboard id={cpuInfo.name} withName type="cpu" gameState={cpuInfo.gameboardState} />
         </GameboardsPanel>
         <div>
-          <Button>
+          <Button onClick={() => dispatch(surrender())}>
             SURRENDER
           </Button>
           <CurrentPlayer>
@@ -64,9 +72,12 @@ function Battleship() {
   return (
     <Screen>
       <div>
-        <WinnerName>Winner is: CPU</WinnerName>
-        <WinnerDescription>Player surrendered</WinnerDescription>
-        <Button>
+        <WinnerName>
+          Winner is:
+          {' '}
+          {winner}
+        </WinnerName>
+        <Button onClick={() => dispatch(restart())}>
           Restart game
         </Button>
       </div>
