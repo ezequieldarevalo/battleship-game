@@ -10,7 +10,6 @@ import {
 } from '../../components/common/styles/screen';
 import InitialStage from './InitialStage';
 import { useAppSelector } from '../../app/hooks';
-// import { selectPlayer, selectStage } from './battleshipSlice';
 import {
   selectStage, selectHumanPlayer, selectCpuPlayer, selectMessage,
 } from './battleshipSlice';
@@ -20,12 +19,7 @@ function Battleship() {
   const stage = useAppSelector(selectStage);
   const playerInfo = useAppSelector(selectHumanPlayer);
   const cpuInfo = useAppSelector(selectCpuPlayer);
-  const message:any = useAppSelector(selectMessage);
-  console.log(playerInfo);
-  console.log(cpuInfo);
-  // const [showMessage, setShowMessage] = useState<boolean>(false);
-
-  // const ownShipTotalArea = getOwnCellShipsFromShipsList(playerInfo.ownShips);
+  const message = useAppSelector(selectMessage);
 
   // GAME SCREEN
   if (stage === GAME_STAGE) {
