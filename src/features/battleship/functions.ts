@@ -127,6 +127,7 @@ export const getGameboardStateAfterHit = (
   gameboardState: ICellState[],
   ownShips: SHIP_AREA[],
 ): ICellState[] => {
+  console.log(cellId);
   let newGameboardState = gameboardState;
   let newCellState: ICellState;
   const actualCell:ICellState = gameboardState[cellId - 1];
@@ -140,7 +141,10 @@ export const getGameboardStateAfterHit = (
     // ownShip case
     // destroyed if it is the last healthy cell and hitted if not
     // if destroyed so update other cells of that ship
-    const shipArea = ownShips[cellId - 1];
+    const shipId = (gameboardState.find(
+      (cellState: ICellState) => cellState.id === cellId,
+    )?.shipId) || 0;
+    const shipArea = ownShips[shipId - 1];
     const healthyCells: number[] = [];
     shipArea.map((id) => {
       if (gameboardState[id - 1].state === OWN) healthyCells.push(id);
@@ -232,7 +236,11 @@ export const emulateIdToHitChoice = (
   while (invalid && localHittedShips.length > 0) {
     const mostHittedShip = getMostHittedShip(localHittedShips);
     mostHittedShipArea = mostHittedShip.area;
-    if (mostHittedShipArea.length === 0) return getRandomInt(1, 101);
+    if (mostHittedShipArea.length === 0) {
+      return availableCells[
+        Math.floor(Math.random() * availableCells.length)
+      ];
+    }
     invalid = false;
     if (mostHittedShipArea.length === 1) orientation = 'unknown';
     if (mostHittedShipArea.length > 1) {

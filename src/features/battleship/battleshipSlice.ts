@@ -6,14 +6,13 @@ import {
   initializeGameboardState, generateRandomOwnShips, getGameboardStateAfterHit, emulateIdToHitChoice,
 } from './functions';
 import {
-  BEGIN_STAGE, DESTROYED, END_STAGE, GAME_STAGE, NONE, CPU, PLAYER,
+  BEGIN_STAGE, DESTROYED, END_STAGE, GAME_STAGE, NONE, CPU, PLAYER, HITTED, OWN,
 } from '../../lib/common/constants';
 
 type TPlayer = {
   name: string;
   ownShips: SHIP_AREA[];
   gameboardState: ICellState[];
-  numberOfShips: number;
 }
 
 type THit = {
@@ -42,13 +41,11 @@ const initialState: BattleshipState = {
     name: '',
     ownShips: [],
     gameboardState: [],
-    numberOfShips: 0,
   },
   cpuPlayer: {
     name: 'CPU',
     ownShips: [],
     gameboardState: [],
-    numberOfShips: 0,
   },
   winner: NONE,
 };
@@ -96,7 +93,7 @@ export const battleshipSlice = createSlice({
         // check if is the end of the game
         const cellsDestroyed = gameboardAfterHit.filter((element) => element.state === DESTROYED);
         // the end
-        if (cellsDestroyed.length === state.cpuPlayer.numberOfShips) {
+        if (cellsDestroyed.length === 15) {
           state.winner = PLAYER;
           state.stage = END_STAGE;
         } else {
@@ -104,11 +101,11 @@ export const battleshipSlice = createSlice({
           state.cpuPlayer.gameboardState = gameboardAfterHit;
         }
       } else {
-      // when is the cpu hit action
+        // when is the cpu hit action
         const availableCells: number[] = [];
         state.humanPlayer.gameboardState.map(
           (cell: ICellState) => {
-            if (cell.state === NONE) availableCells.push(cell.id);
+            if (cell.state === NONE || cell.state === OWN) availableCells.push(cell.id);
             return 0;
           },
         );
@@ -116,9 +113,7 @@ export const battleshipSlice = createSlice({
         state.humanPlayer.ownShips.map((ship) => {
           const newShip: SHIP_AREA = [];
           ship.map((cellId:number) => {
-            if (state.humanPlayer.gameboardState.find(
-              (element) => element.id === cellId,
-            ) !== undefined) { newShip.push(cellId); }
+            if (state.humanPlayer.gameboardState[cellId - 1].state === HITTED) newShip.push(cellId);
             return 0;
           });
           hittedShips.push(newShip);
@@ -134,7 +129,7 @@ export const battleshipSlice = createSlice({
         // check if is the end of the game
         const cellsDestroyed = gameboardAfterHit.filter((element) => element.state === DESTROYED);
         // the end
-        if (cellsDestroyed.length === state.humanPlayer.numberOfShips) {
+        if (cellsDestroyed.length === 15) {
           state.winner = CPU;
           state.stage = END_STAGE;
         } else {
@@ -165,7 +160,7 @@ export const battleshipSlice = createSlice({
   // },
 });
 
-export const { begin } = battleshipSlice.actions;
+export const { begin, hit } = battleshipSlice.actions;
 
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of
