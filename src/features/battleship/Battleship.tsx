@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Gameboard from '../../components/Gameboard';
 import {
   Screen,
@@ -9,33 +9,46 @@ import {
   WinnerDescription,
 } from '../../components/common/styles/screen';
 import InitialStage from './InitialStage';
-import { useAppSelector } from '../../app/hooks';
-// import { selectPlayer, selectStage } from './battleshipSlice';
-import { selectStage, selectHumanPlayer, selectCpuPlayer } from './battleshipSlice';
+import { useAppSelector, useAppDispatch } from '../../app/hooks';
+import {
+  selectStage, selectHumanPlayer, selectCpuPlayer, selectMessage, selectActivePlayer, hit,
+} from './battleshipSlice';
 import { BEGIN_STAGE, GAME_STAGE } from '../../lib/common/constants';
 
 function Battleship() {
   const stage = useAppSelector(selectStage);
   const playerInfo = useAppSelector(selectHumanPlayer);
   const cpuInfo = useAppSelector(selectCpuPlayer);
-  console.log(playerInfo);
-  console.log(cpuInfo);
+  const message = useAppSelector(selectMessage);
+  const activePlayer = useAppSelector(selectActivePlayer);
+  const dispatch = useAppDispatch();
 
-  // const ownShipTotalArea = getOwnCellShipsFromShipsList(playerInfo.ownShips);
+  useEffect(() => {
+    if (activePlayer === 'cpu') {
+      setTimeout(() => { dispatch(hit({ cellId: 1, player: 'human' })); }, 2000);
+    }
+  }, [activePlayer]);
 
   // GAME SCREEN
   if (stage === GAME_STAGE) {
     return (
       <Screen>
         <GameboardsPanel>
-          <Gameboard id={playerInfo.name} withName type="player" miniature gameState={playerInfo.gameboardState} />
+          <Gameboard id={playerInfo.name} withName type="human" miniature gameState={playerInfo.gameboardState} />
           <Gameboard id={cpuInfo.name} withName type="cpu" gameState={cpuInfo.gameboardState} />
         </GameboardsPanel>
         <div>
           <Button>
             SURRENDER
           </Button>
-          <CurrentPlayer>Playing: Player</CurrentPlayer>
+          <CurrentPlayer>
+            Playing:
+            {' '}
+            { (activePlayer === 'human') ? playerInfo.name : 'CPU (waiting...)' }
+          </CurrentPlayer>
+        </div>
+        <div>
+          {message}
         </div>
       </Screen>
     );

@@ -122,12 +122,18 @@ const updateShipDestroyed = (
   return newGameboardState;
 };
 
+interface IAFTERHIT {
+  gameboard: ICellState[];
+  hitResult: 'missed' | 'hitted' | 'destroyed';
+}
+
 export const getGameboardStateAfterHit = (
   cellId: number,
   gameboardState: ICellState[],
   ownShips: SHIP_AREA[],
-): ICellState[] => {
+): IAFTERHIT => {
   let newGameboardState = gameboardState;
+  let newHitResult:'missed' | 'hitted' | 'destroyed';
   let newCellState: ICellState;
   const actualCell:ICellState = gameboardState[cellId - 1];
   if (actualCell.state === NONE) {
@@ -135,12 +141,16 @@ export const getGameboardStateAfterHit = (
       ...actualCell,
       state: MISSED,
     };
+    newHitResult = 'missed';
     newGameboardState[cellId - 1] = newCellState;
   } else {
     // ownShip case
     // destroyed if it is the last healthy cell and hitted if not
     // if destroyed so update other cells of that ship
-    const shipArea = ownShips[cellId - 1];
+    const shipId = (gameboardState.find(
+      (cellState: ICellState) => cellState.id === cellId,
+    )?.shipId) || 0;
+    const shipArea = ownShips[shipId - 1];
     const healthyCells: number[] = [];
     shipArea.map((id) => {
       if (gameboardState[id - 1].state === OWN) healthyCells.push(id);
@@ -148,15 +158,17 @@ export const getGameboardStateAfterHit = (
     });
     if (healthyCells.length === 1) {
       newGameboardState = updateShipDestroyed(gameboardState, shipArea);
+      newHitResult = 'destroyed';
     } else {
       newCellState = {
         ...actualCell,
         state: HITTED,
       };
+      newHitResult = 'hitted';
       newGameboardState[cellId - 1] = newCellState;
     }
   }
-  return newGameboardState;
+  return { gameboard: newGameboardState, hitResult: newHitResult };
 };
 
 const isCellAble = (shipArea: SHIP_AREA, direction: string, availableCells:number[]): boolean => {
@@ -232,7 +244,11 @@ export const emulateIdToHitChoice = (
   while (invalid && localHittedShips.length > 0) {
     const mostHittedShip = getMostHittedShip(localHittedShips);
     mostHittedShipArea = mostHittedShip.area;
-    if (mostHittedShipArea.length === 0) return getRandomInt(1, 101);
+    if (mostHittedShipArea.length === 0) {
+      return availableCells[
+        Math.floor(Math.random() * availableCells.length)
+      ];
+    }
     invalid = false;
     if (mostHittedShipArea.length === 1) orientation = 'unknown';
     if (mostHittedShipArea.length > 1) {
@@ -277,4 +293,14 @@ export const emulateIdToHitChoice = (
     Math.floor(Math.random() * availableCells.length)
   ];
   return randomAvailableCell;
+};
+
+export const getMessageByHitResult = (player: 'human' | 'cpu', hitResult: 'missed' | 'hitted' | 'destroyed') => {
+  switch (hitResult) {
+    case 'missed':
+      return `${player} has missed`;
+    case 'hitted':
+      return `${player} hitted a ship`;
+    default: return `${player} destroyed a ship`;
+  }
 };

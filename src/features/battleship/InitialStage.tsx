@@ -357,7 +357,7 @@ function InitialStage() {
     <Screen>
       <LoaderOverlay loading={loading}>
         <div ref={divRef}>
-          <Gameboard initial id="gb" type="player" gameState={[]}>
+          <Gameboard initial id="gb" type="human" gameState={[]}>
             <>
               {carrier.initialized && (
               <Draggable onStart={() => setCurrentShipInfo(carrier)} bounds="parent" defaultPosition={{ x: carrier.initialX, y: carrier.initialY }} grid={[MOVEMENT_SIZE, MOVEMENT_SIZE]} cancel=".btn">

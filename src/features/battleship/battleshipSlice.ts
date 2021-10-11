@@ -4,16 +4,16 @@ import { RootState } from '../../app/store';
 import { SHIP_AREA, ICellState } from '../../lib/common/types';
 import {
   initializeGameboardState, generateRandomOwnShips, getGameboardStateAfterHit, emulateIdToHitChoice,
+  getMessageByHitResult,
 } from './functions';
 import {
-  BEGIN_STAGE, DESTROYED, END_STAGE, GAME_STAGE, NONE, CPU, PLAYER,
+  BEGIN_STAGE, DESTROYED, END_STAGE, GAME_STAGE, NONE, CPU, PLAYER, HITTED, OWN,
 } from '../../lib/common/constants';
 
 type TPlayer = {
   name: string;
   ownShips: SHIP_AREA[];
   gameboardState: ICellState[];
-  numberOfShips: number;
 }
 
 type THit = {
@@ -33,6 +33,8 @@ export interface BattleshipState {
   humanPlayer: TPlayer;
   cpuPlayer: TPlayer;
   winner: 'none' | 'cpu' | 'player'
+  message: string;
+  activePlayer: 'human' | 'cpu'
 }
 
 const initialState: BattleshipState = {
@@ -42,15 +44,15 @@ const initialState: BattleshipState = {
     name: '',
     ownShips: [],
     gameboardState: [],
-    numberOfShips: 0,
   },
   cpuPlayer: {
-    name: 'CPU',
+    name: CPU,
     ownShips: [],
     gameboardState: [],
-    numberOfShips: 0,
   },
   winner: NONE,
+  message: '',
+  activePlayer: 'human',
 };
 
 // The function below is called a thunk and allows us to perform async logic. It
@@ -88,27 +90,32 @@ export const battleshipSlice = createSlice({
     hit: (state, action: PayloadAction<THit>) => {
       // when human choose a target cell (cpu cell)
       if (action.payload.player === CPU) {
-        const gameboardAfterHit = getGameboardStateAfterHit(
+        const resultAfterHit = getGameboardStateAfterHit(
           action.payload.cellId,
           state.cpuPlayer.gameboardState,
           state.cpuPlayer.ownShips,
         );
+        const gameboardAfterHit = resultAfterHit.gameboard;
         // check if is the end of the game
-        const cellsDestroyed = gameboardAfterHit.filter((element) => element.state === DESTROYED);
+        const cellsDestroyed = gameboardAfterHit.filter(
+          (element: ICellState) => element.state === DESTROYED,
+        );
         // the end
-        if (cellsDestroyed.length === state.cpuPlayer.numberOfShips) {
+        if (cellsDestroyed.length === 15) {
           state.winner = PLAYER;
           state.stage = END_STAGE;
         } else {
           // continue playing
+          state.message = getMessageByHitResult('human', resultAfterHit.hitResult);
           state.cpuPlayer.gameboardState = gameboardAfterHit;
+          state.activePlayer = 'cpu';
         }
       } else {
-      // when is the cpu hit action
+        // when is the cpu hit action
         const availableCells: number[] = [];
         state.humanPlayer.gameboardState.map(
           (cell: ICellState) => {
-            if (cell.state === NONE) availableCells.push(cell.id);
+            if (cell.state === NONE || cell.state === OWN) availableCells.push(cell.id);
             return 0;
           },
         );
@@ -116,9 +123,7 @@ export const battleshipSlice = createSlice({
         state.humanPlayer.ownShips.map((ship) => {
           const newShip: SHIP_AREA = [];
           ship.map((cellId:number) => {
-            if (state.humanPlayer.gameboardState.find(
-              (element) => element.id === cellId,
-            ) !== undefined) { newShip.push(cellId); }
+            if (state.humanPlayer.gameboardState[cellId - 1].state === HITTED) newShip.push(cellId);
             return 0;
           });
           hittedShips.push(newShip);
@@ -126,20 +131,25 @@ export const battleshipSlice = createSlice({
         });
 
         const idToHit = emulateIdToHitChoice(hittedShips, availableCells);
-        const gameboardAfterHit = getGameboardStateAfterHit(
+        const resultAfterHit = getGameboardStateAfterHit(
           idToHit,
           state.humanPlayer.gameboardState,
           state.humanPlayer.ownShips,
         );
+        const gameboardAfterHit = resultAfterHit.gameboard;
         // check if is the end of the game
-        const cellsDestroyed = gameboardAfterHit.filter((element) => element.state === DESTROYED);
+        const cellsDestroyed = gameboardAfterHit.filter(
+          (element: ICellState) => element.state === DESTROYED,
+        );
         // the end
-        if (cellsDestroyed.length === state.humanPlayer.numberOfShips) {
+        if (cellsDestroyed.length === 15) {
           state.winner = CPU;
           state.stage = END_STAGE;
         } else {
           // continue playing
+          state.message = getMessageByHitResult('cpu', resultAfterHit.hitResult);
           state.humanPlayer.gameboardState = gameboardAfterHit;
+          state.activePlayer = 'human';
         }
       }
     },
@@ -165,7 +175,7 @@ export const battleshipSlice = createSlice({
   // },
 });
 
-export const { begin } = battleshipSlice.actions;
+export const { begin, hit } = battleshipSlice.actions;
 
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of
@@ -173,6 +183,8 @@ export const { begin } = battleshipSlice.actions;
 export const selectHumanPlayer = (state: RootState) => state.battleship.humanPlayer;
 export const selectCpuPlayer = (state: RootState) => state.battleship.cpuPlayer;
 export const selectStage = (state: RootState) => state.battleship.stage;
+export const selectMessage = (state: RootState) => state.battleship.message;
+export const selectActivePlayer = (state: RootState) => state.battleship.activePlayer;
 
 // We can also write thunks by hand, which may contain both sync and async logic.
 // Here's an example of conditionally dispatching actions based on current state.
