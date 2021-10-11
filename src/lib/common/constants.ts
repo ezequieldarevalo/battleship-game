@@ -9,6 +9,7 @@ export const BEGIN_STAGE = 'beginStage';
 export const GAME_STAGE = 'gameStage';
 export const END_STAGE = 'endStage';
 export const CPU = 'cpu';
+export const HUMAN = 'human';
 export const PLAYER = 'player';
 export const GAMEBOARD_BORDER = 1;
 export const GAMEBOARD_WIDTH_DESKTOP = 400;

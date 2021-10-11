@@ -4,10 +4,14 @@ import {
   BoardContainer, BoardGrid, BoardTitle, CellContainer,
 } from './gameboardStyles';
 import { initialGameboardState } from '../../lib/common/constants';
+import { useAppDispatch } from '../../app/hooks';
+import {
+  hit,
+} from '../../features/battleship/battleshipSlice';
 
 interface IGameboardProps {
   id: string;
-  type: 'player' | 'cpu';
+  type: 'human' | 'cpu';
   initial?: boolean;
   gameState: ICellState[];
   miniature?: boolean;
@@ -30,6 +34,7 @@ const Gameboard: React.FunctionComponent<IGameboardProps> = ({
     initial: false,
     children: <></>,
   };
+  const dispatch = useAppDispatch();
 
   return (
     <BoardContainer>
@@ -38,10 +43,19 @@ const Gameboard: React.FunctionComponent<IGameboardProps> = ({
         {children}
         {initial
           ? initialGameboardState.map((cellState: ICellState) => (
-            <CellContainer key={cellState.id} state={cellState.state} type={type} />
+            <CellContainer
+              key={cellState.id}
+              state={cellState.state}
+              type={type}
+            />
           ))
           : gameState.map((cellState: ICellState) => (
-            <CellContainer key={cellState.id} state={cellState.state} type={type} />
+            <CellContainer
+              onClick={() => dispatch(hit({ cellId: cellState.id, player: type }))}
+              key={cellState.id}
+              state={cellState.state}
+              type={type}
+            />
           ))}
       </BoardGrid>
     </BoardContainer>

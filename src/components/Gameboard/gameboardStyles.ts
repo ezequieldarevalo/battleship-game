@@ -38,7 +38,7 @@ export const BoardGrid = styled.div`
 
 interface ICellContainerProps {
   state: CELL_STATE,
-  type: 'player' | 'cpu'
+  type: 'human' | 'cpu'
 }
 export const CellContainer = styled.div`
   border: 1px solid black;

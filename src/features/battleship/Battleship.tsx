@@ -28,7 +28,7 @@ function Battleship() {
     return (
       <Screen>
         <GameboardsPanel>
-          <Gameboard id={playerInfo.name} withName type="player" miniature gameState={playerInfo.gameboardState} />
+          <Gameboard id={playerInfo.name} withName type="human" miniature gameState={playerInfo.gameboardState} />
           <Gameboard id={cpuInfo.name} withName type="cpu" gameState={cpuInfo.gameboardState} />
         </GameboardsPanel>
         <div>
