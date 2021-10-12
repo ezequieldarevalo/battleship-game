@@ -1,0 +1,10 @@
+{
+  "app.name": "BATTLESHIP GAME",
+  "app.gameStage.button.surrender": "SURRENDER",
+  "app.gameStage.playerIndicator.playing": "Playing:",
+  "app.endgameStage.winnerIndicator": "Winner is:",
+  "app.endgameStage.button.restart": "RESTART GAME",
+  "app.initialStage.button.startGame": "START GAME",
+  "app.initialStage.mobilePanel.long": "Long:",
+  "app.initialStage.mobilePanel.orientation":"Orientation:"
+}

@@ -54,6 +54,7 @@ import {
   MobilePanel,
 } from '../../components/common/styles/screen';
 import LoaderOverlay from '../../components/LoaderOverlay';
+import I18n from '../../components/common/i18n';
 
 /// //////////////////
 // LOCAL FUNCTIONS //
@@ -426,12 +427,12 @@ function InitialStage() {
       <MobilePanel>
         {currentShipInfo && (
         <>
-          Longitud:
+          <I18n id="app.initialStage.mobilePanel.long" />
           {' '}
           {currentShipInfo.size}
           {' '}
           <br />
-          Orientacion:
+          <I18n id="app.initialStage.mobilePanel.orientation" />
           {' '}
             {currentShipInfo.vertical ? 'vertical' : 'horizontal'}
           <br />
@@ -442,7 +443,7 @@ function InitialStage() {
       <div>
         {error.has && <div>{error.description }</div>}
         <Button onClick={sendShips}>
-          START GAME
+          <I18n id="app.initialStage.button.startGame" />
         </Button>
         <CurrentPlayer>
           <EnterName id="name" name="name" value={playerName} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPlayerName(e.target.value)} placeholder="Player name" />

@@ -4,6 +4,7 @@ import './index.css';
 import { Provider } from 'react-redux';
 import App from './App';
 import { store } from './app/store';
+import publicInitialMessages from './components/common/messages/en-US.json';
 
 ReactDOM.render(
   <React.StrictMode>
@@ -12,7 +13,7 @@ ReactDOM.render(
         name="viewport"
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
       />
-      <App />
+      <App initialLang="en-US" initialMessages={publicInitialMessages} />
     </Provider>
   </React.StrictMode>,
   document.getElementById('root'),
