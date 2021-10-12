@@ -237,7 +237,7 @@ const getOrientationFromValues = (cellId1: number, cellId2: number) => {
 };
 
 // discard not able target cells and choose one from the rest
-// if no hitted cells so execute a random choice
+// if no hitted cells so execute a random choice from available cells list
 export const emulateIdToHitChoice = (
   hittedShips: SHIP_AREA[],
   availableCells: number[],

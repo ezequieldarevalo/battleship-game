@@ -62,7 +62,7 @@ import I18n from '../../components/common/i18n';
 
 // this function receives the translation of each ship from (x,y)=(0,0) and
 // check if ships are straight lines
-const shipsStraightLinesValidation = (
+const shipsBeetweenLinesValidation = (
   carrierTranslation: number[],
   cruiser1Translation: number[],
   cruiser2Translation: number[],
@@ -313,7 +313,7 @@ function InitialStage() {
     const cruiser3Translation: number[] = getMovementCoordinatesFromCss(document.getElementById(CRUISER3_ID)?.getAttribute('style') || '');
     const submarineTranslation: number[] = getMovementCoordinatesFromCss(document.getElementById(SUBMARINE_ID)?.getAttribute('style') || '');
     // ships in bounds validation
-    if (!shipsStraightLinesValidation(
+    if (!shipsBeetweenLinesValidation(
       carrierTranslation,
       cruiser1Translation,
       cruiser2Translation,
@@ -321,7 +321,7 @@ function InitialStage() {
       submarineTranslation,
       CELL_SIZE,
     )) {
-      setError({ has: true, description: 'StraightLinesFailed' }); return;
+      setError({ has: true, description: 'Ships are not between lines' }); return;
     }
     // ships in gameboard validation
     if (!shipInGameboard(carrier, carrierTranslation, gameboardWidth)) { setError({ has: true, description: 'Carrier out of gameboard' }); return; }
@@ -342,7 +342,7 @@ function InitialStage() {
       ...cruiser3Area,
       ...submarineArea,
     ];
-    if (hasDuplicates(totalArea)) { setError({ has: true, description: 'Overlaped ships' }); return; }
+    if (hasDuplicates(totalArea)) { setError({ has: true, description: 'Ships are overlaped' }); return; }
     // if comes here then send ships to the store
     setError(noError);
     // here dispatch begin with name and ownShips (player)
