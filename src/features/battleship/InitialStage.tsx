@@ -156,6 +156,11 @@ function InitialStage() {
   const [playerName, setPlayerName] = useState<string>('');
   const [error, setError] = useState<GAME_ERROR>(noError);
   const divRef = useRef<HTMLDivElement>(null);
+  const carrierRef = useRef<HTMLDivElement>(null);
+  const cruiser1Ref = useRef<HTMLDivElement>(null);
+  const cruiser2Ref = useRef<HTMLDivElement>(null);
+  const cruiser3Ref = useRef<HTMLDivElement>(null);
+  const submarineRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [currentShipInfo, setCurrentShipInfo] = useState<SHIP_INFO | null>(null);
   const [carrier, setCarrier] = useState<SHIP_INFO>({
@@ -201,6 +206,12 @@ function InitialStage() {
 
   const getGameboardWidthFromDOM = (): number => divRef.current?.offsetWidth || 0;
 
+  const getCarrierCSSTranslationFromDOM = (): string => carrierRef.current?.getAttribute('style') || '';
+  const getCruiser1CSSTranslationFromDOM = (): string => cruiser1Ref.current?.getAttribute('style') || '';
+  const getCruiser2CSSTranslationFromDOM = (): string => cruiser2Ref.current?.getAttribute('style') || '';
+  const getCruiser3CSSTranslationFromDOM = (): string => cruiser3Ref.current?.getAttribute('style') || '';
+  const getSubmarineCSSTranslationFromDOM = (): string => submarineRef.current?.getAttribute('style') || '';
+
   const getInitialCoordinate = (id: number): number => {
     const gameboardWidth = getGameboardWidthFromDOM() - (2 * GAMEBOARD_BORDER);
     if (gameboardWidth === GAMEBOARD_WIDTH_DESKTOP) {
@@ -209,7 +220,7 @@ function InitialStage() {
     return (CELL_SIZE_MOBILE) * (id - 1) + ((id - 1) * CELL_SIZE_MOBILE);
   };
 
-  const handleChangeOrientationById = (id: string, e:any): void => {
+  const handleChangeOrientationById = (id: string, e: any): void => {
     e.preventDefault();
     switch (id) {
       case CARRIER_ID:
@@ -307,11 +318,21 @@ function InitialStage() {
     // get neccesary data to validations
     const gameboardWidth = getGameboardWidthFromDOM() - (2 * GAMEBOARD_BORDER);
     const CELL_SIZE = gameboardWidth / BOARD_SIZE;
-    const carrierTranslation: number[] = getMovementCoordinatesFromCss(document.getElementById(CARRIER_ID)?.getAttribute('style') || '');
-    const cruiser1Translation: number[] = getMovementCoordinatesFromCss(document.getElementById(CRUISER1_ID)?.getAttribute('style') || '');
-    const cruiser2Translation: number[] = getMovementCoordinatesFromCss(document.getElementById(CRUISER2_ID)?.getAttribute('style') || '');
-    const cruiser3Translation: number[] = getMovementCoordinatesFromCss(document.getElementById(CRUISER3_ID)?.getAttribute('style') || '');
-    const submarineTranslation: number[] = getMovementCoordinatesFromCss(document.getElementById(SUBMARINE_ID)?.getAttribute('style') || '');
+    const carrierTranslation: number[] = getMovementCoordinatesFromCss(
+      getCarrierCSSTranslationFromDOM(),
+    );
+    const cruiser1Translation: number[] = getMovementCoordinatesFromCss(
+      getCruiser1CSSTranslationFromDOM(),
+    );
+    const cruiser2Translation: number[] = getMovementCoordinatesFromCss(
+      getCruiser2CSSTranslationFromDOM(),
+    );
+    const cruiser3Translation: number[] = getMovementCoordinatesFromCss(
+      getCruiser3CSSTranslationFromDOM(),
+    );
+    const submarineTranslation: number[] = getMovementCoordinatesFromCss(
+      getSubmarineCSSTranslationFromDOM(),
+    );
     // ships in bounds validation
     if (!shipsBeetweenLinesValidation(
       carrierTranslation,
@@ -365,60 +386,67 @@ function InitialStage() {
         <div ref={divRef}>
           <Gameboard initial id="gb" type="human" gameState={[]}>
             <>
+
               {carrier.initialized && (
-              <Draggable onStart={() => setCurrentShipInfo(carrier)} bounds="parent" defaultPosition={{ x: carrier.initialX, y: carrier.initialY }} grid={[MOVEMENT_SIZE, MOVEMENT_SIZE]} cancel=".btn">
-                <ShipShape
-                  className="carrier"
-                  onContextMenu={(e: any) => handleChangeOrientationById(carrier.id, e)}
-                  vertical={carrier.vertical}
-                  size={carrier.size}
-                  id={carrier.id}
-                />
-              </Draggable>
+                <Draggable nodeRef={carrierRef} onStart={() => setCurrentShipInfo(carrier)} bounds="parent" defaultPosition={{ x: carrier.initialX, y: carrier.initialY }} grid={[MOVEMENT_SIZE, MOVEMENT_SIZE]} cancel=".btn">
+                  <ShipShape
+                    className="carrier"
+                    ref={carrierRef}
+                    onContextMenu={(e: any) => handleChangeOrientationById(carrier.id, e)}
+                    vertical={carrier.vertical}
+                    size={carrier.size}
+                    id={carrier.id}
+                  />
+                </Draggable>
               )}
+
               {cruiser1.initialized && (
-              <Draggable onStart={() => setCurrentShipInfo(cruiser1)} bounds="parent" defaultPosition={{ x: cruiser1.initialX, y: cruiser1.initialY }} grid={[MOVEMENT_SIZE, MOVEMENT_SIZE]} cancel=".btn">
-                <ShipShape
-                  className="cruiser"
-                  onContextMenu={(e: any) => handleChangeOrientationById(cruiser1.id, e)}
-                  vertical={cruiser1.vertical}
-                  size={cruiser1.size}
-                  id={cruiser1.id}
-                />
-              </Draggable>
+                <Draggable nodeRef={cruiser1Ref} onStart={() => setCurrentShipInfo(cruiser1)} bounds="parent" defaultPosition={{ x: cruiser1.initialX, y: cruiser1.initialY }} grid={[MOVEMENT_SIZE, MOVEMENT_SIZE]} cancel=".btn">
+                  <ShipShape
+                    className="cruiser"
+                    ref={cruiser1Ref}
+                    onContextMenu={(e: any) => handleChangeOrientationById(cruiser1.id, e)}
+                    vertical={cruiser1.vertical}
+                    size={cruiser1.size}
+                    id={cruiser1.id}
+                  />
+                </Draggable>
               )}
               {cruiser2.initialized && (
-              <Draggable onStart={() => setCurrentShipInfo(cruiser2)} bounds="parent" defaultPosition={{ x: cruiser2.initialX, y: cruiser2.initialY }} grid={[MOVEMENT_SIZE, MOVEMENT_SIZE]} cancel=".btn">
-                <ShipShape
-                  className="cruiser"
-                  onContextMenu={(e: any) => handleChangeOrientationById(cruiser2.id, e)}
-                  vertical={cruiser2.vertical}
-                  size={cruiser2.size}
-                  id={cruiser2.id}
-                />
-              </Draggable>
+                <Draggable nodeRef={cruiser2Ref} onStart={() => setCurrentShipInfo(cruiser2)} bounds="parent" defaultPosition={{ x: cruiser2.initialX, y: cruiser2.initialY }} grid={[MOVEMENT_SIZE, MOVEMENT_SIZE]} cancel=".btn">
+                  <ShipShape
+                    className="cruiser"
+                    ref={cruiser2Ref}
+                    onContextMenu={(e: any) => handleChangeOrientationById(cruiser2.id, e)}
+                    vertical={cruiser2.vertical}
+                    size={cruiser2.size}
+                    id={cruiser2.id}
+                  />
+                </Draggable>
               )}
               {cruiser3.initialized && (
-              <Draggable onStart={() => setCurrentShipInfo(cruiser3)} bounds="parent" defaultPosition={{ x: cruiser3.initialX, y: cruiser3.initialY }} grid={[MOVEMENT_SIZE, MOVEMENT_SIZE]} cancel=".btn">
-                <ShipShape
-                  className="cruiser"
-                  onContextMenu={(e: any) => handleChangeOrientationById(cruiser3.id, e)}
-                  vertical={cruiser3.vertical}
-                  size={cruiser3.size}
-                  id={cruiser3.id}
-                />
-              </Draggable>
+                <Draggable nodeRef={cruiser3Ref} onStart={() => setCurrentShipInfo(cruiser3)} bounds="parent" defaultPosition={{ x: cruiser3.initialX, y: cruiser3.initialY }} grid={[MOVEMENT_SIZE, MOVEMENT_SIZE]} cancel=".btn">
+                  <ShipShape
+                    className="cruiser"
+                    ref={cruiser3Ref}
+                    onContextMenu={(e: any) => handleChangeOrientationById(cruiser3.id, e)}
+                    vertical={cruiser3.vertical}
+                    size={cruiser3.size}
+                    id={cruiser3.id}
+                  />
+                </Draggable>
               )}
               {submarine.initialized && (
-              <Draggable onStart={() => setCurrentShipInfo(submarine)} bounds="parent" defaultPosition={{ x: submarine.initialX, y: submarine.initialY }} grid={[MOVEMENT_SIZE, MOVEMENT_SIZE]} cancel=".btn">
-                <ShipShape
-                  className="submarine"
-                  onContextMenu={(e: any) => handleChangeOrientationById(submarine.id, e)}
-                  vertical={submarine.vertical}
-                  size={submarine.size}
-                  id={submarine.id}
-                />
-              </Draggable>
+                <Draggable nodeRef={submarineRef} onStart={() => setCurrentShipInfo(submarine)} bounds="parent" defaultPosition={{ x: submarine.initialX, y: submarine.initialY }} grid={[MOVEMENT_SIZE, MOVEMENT_SIZE]} cancel=".btn">
+                  <ShipShape
+                    className="submarine"
+                    ref={submarineRef}
+                    onContextMenu={(e: any) => handleChangeOrientationById(submarine.id, e)}
+                    vertical={submarine.vertical}
+                    size={submarine.size}
+                    id={submarine.id}
+                  />
+                </Draggable>
               )}
             </>
           </Gameboard>
@@ -426,22 +454,22 @@ function InitialStage() {
       </LoaderOverlay>
       <MobilePanel>
         {currentShipInfo && (
-        <>
-          <I18n id="app.initialStage.mobilePanel.long" />
-          {' '}
-          {currentShipInfo.size}
-          {' '}
-          <br />
-          <I18n id="app.initialStage.mobilePanel.orientation" />
-          {' '}
+          <>
+            <I18n id="app.initialStage.mobilePanel.long" />
+            {' '}
+            {currentShipInfo.size}
+            {' '}
+            <br />
+            <I18n id="app.initialStage.mobilePanel.orientation" />
+            {' '}
             {currentShipInfo.vertical ? 'vertical' : 'horizontal'}
-          <br />
-          <button onClick={(e) => handleChangeOrientationById(currentShipInfo.id, e)} type="button">Cambiar orientacion</button>
-        </>
+            <br />
+            <button onClick={(e) => handleChangeOrientationById(currentShipInfo.id, e)} type="button">Cambiar orientacion</button>
+          </>
         )}
       </MobilePanel>
       <div>
-        {error.has && <div>{error.description }</div>}
+        {error.has && <div>{error.description}</div>}
         <Button onClick={sendShips}>
           <I18n id="app.initialStage.button.startGame" />
         </Button>
