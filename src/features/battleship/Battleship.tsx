@@ -22,6 +22,7 @@ import {
   restart,
 } from './battleshipSlice';
 import { BEGIN_STAGE, GAME_STAGE } from '../../lib/common/constants';
+import I18n from '../../components/common/i18n';
 
 function Battleship() {
   const stage = useAppSelector(selectStage);
@@ -49,10 +50,10 @@ function Battleship() {
         </GameboardsPanel>
         <div>
           <Button onClick={() => dispatch(surrender())}>
-            SURRENDER
+            <I18n id="app.gameStage.button.surrender" />
           </Button>
           <CurrentPlayer>
-            Playing:
+            <I18n id="app.gameStage.playerIndicator.playing" />
             {' '}
             { (activePlayer === 'human') ? playerInfo.name : 'CPU (waiting...)' }
           </CurrentPlayer>
@@ -75,12 +76,12 @@ function Battleship() {
     <Screen>
       <div>
         <WinnerName>
-          Winner is:
+          <I18n id="app.endgameStage.winnerIndicator" />
           {' '}
           {winner}
         </WinnerName>
         <Button onClick={() => dispatch(restart())}>
-          Restart game
+          <I18n id="app.endgameStage.button.restart" />
         </Button>
       </div>
     </Screen>
