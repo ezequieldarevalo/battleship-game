@@ -33,3 +33,11 @@ export const MobilePanel = styled.div`
       display: block;
   }
 `;
+
+export const GameboardSeparator = styled.div`
+  width: 40px;
+  height: 100%;
+  @media (max-width: 996px) {
+    display: none;
+  }
+`;
