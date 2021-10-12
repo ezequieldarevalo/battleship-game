@@ -1,4 +1,5 @@
 import { GAME_ERROR, ICellState } from './types';
+import { GAMEBOARD_WIDTH_DESKTOP, GAMEBOARD_WIDTH_MOBILE } from './config';
 
 export const DESTROYED = 'destroyed';
 export const OWN = 'own';
@@ -11,9 +12,7 @@ export const END_STAGE = 'endStage';
 export const CPU = 'cpu';
 export const HUMAN = 'human';
 export const PLAYER = 'player';
-export const GAMEBOARD_BORDER = 1;
-export const GAMEBOARD_WIDTH_DESKTOP = 400;
-export const GAMEBOARD_WIDTH_MOBILE = 300;
+
 export const BOARD_SIZE = 10;
 export const MOVEMENT_SIZE = 10;
 export const CELL_SIZE_DESKTOP = GAMEBOARD_WIDTH_DESKTOP / BOARD_SIZE;

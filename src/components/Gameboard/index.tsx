@@ -17,6 +17,7 @@ interface IGameboardProps {
   miniature?: boolean;
   withName?: boolean;
   children?: React.ReactElement;
+  active?: boolean;
 }
 
 const Gameboard: React.FunctionComponent<IGameboardProps> = ({
@@ -27,12 +28,14 @@ const Gameboard: React.FunctionComponent<IGameboardProps> = ({
   miniature,
   withName,
   children,
+  active,
 }) => {
   Gameboard.defaultProps = {
     miniature: false,
     withName: false,
     initial: false,
     children: <></>,
+    active: false,
   };
   const dispatch = useAppDispatch();
 
@@ -51,7 +54,7 @@ const Gameboard: React.FunctionComponent<IGameboardProps> = ({
           ))
           : gameState.map((cellState: ICellState) => (
             <CellContainer
-              onClick={() => dispatch(hit({ cellId: cellState.id, player: type }))}
+              onClick={() => active && dispatch(hit({ cellId: cellState.id, player: type }))}
               key={cellState.id}
               state={cellState.state}
               type={type}

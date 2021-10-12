@@ -18,9 +18,7 @@ import {
 
 // CONSTANTS
 import {
-  GAMEBOARD_BORDER,
-  GAMEBOARD_WIDTH_DESKTOP,
-  GAMEBOARD_WIDTH_MOBILE,
+
   BOARD_SIZE,
   MOVEMENT_SIZE,
   CELL_SIZE_DESKTOP,
@@ -32,6 +30,13 @@ import {
   SUBMARINE_ID,
   noError,
 } from '../../lib/common/constants';
+
+// CONFIG
+import {
+  GAMEBOARD_WIDTH_DESKTOP,
+  GAMEBOARD_WIDTH_MOBILE,
+  GAMEBOARD_BORDER,
+} from '../../lib/common/config';
 
 // TYPES
 import {

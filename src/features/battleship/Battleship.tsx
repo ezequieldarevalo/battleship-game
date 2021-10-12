@@ -6,6 +6,7 @@ import {
   CurrentPlayer,
   Button,
   WinnerName,
+  GameboardSeparator,
 } from '../../components/common/styles/screen';
 import InitialStage from './InitialStage';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
@@ -43,7 +44,8 @@ function Battleship() {
       <Screen>
         <GameboardsPanel>
           <Gameboard id={playerInfo.name} withName type="human" miniature gameState={playerInfo.gameboardState} />
-          <Gameboard id={cpuInfo.name} withName type="cpu" gameState={cpuInfo.gameboardState} />
+          <GameboardSeparator />
+          <Gameboard active={activePlayer === 'human'} id={cpuInfo.name} withName type="cpu" gameState={cpuInfo.gameboardState} />
         </GameboardsPanel>
         <div>
           <Button onClick={() => dispatch(surrender())}>
