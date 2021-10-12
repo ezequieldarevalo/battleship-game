@@ -4,5 +4,7 @@
   "app.gameStage.playerIndicator.playing": "Jugando:",
   "app.endStage.winnerIndicator":"El ganador es:",
   "app.endgameStage.button.restart": "Reiniciar juego",
-  "app.initialStage.button.startGame": "Iniciar partida"
+  "app.initialStage.button.startGame": "Iniciar partida",
+  "app.initialStage.mobilePanel.long": "Longitud:",
+  "app.initialStage.mobilePanel.orientation": "Orientacion:"
 }
