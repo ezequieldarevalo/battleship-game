@@ -15,6 +15,17 @@ const getBGColorFromState = (state: string, type: 'human' | 'cpu') => {
   }
 };
 
+const getBorderColorFromState = (state: string) => {
+  switch (state) {
+    case 'own':
+      return 'grey';
+    case 'hitted': return 'orange';
+    case 'destroyed': return 'red';
+    case 'missed': return 'skyblue';
+    default: return 'grey';
+  }
+};
+
 export const BoardContainer = styled.div`
   position: relative;
   float: left;
@@ -45,6 +56,6 @@ interface ICellContainerProps {
   type: 'human' | 'cpu'
 }
 export const CellContainer = styled.div`
-  border: 1px solid black;
+  border: 1px solid ${({ state }: ICellContainerProps) => getBorderColorFromState(state)};
   background: ${({ state, type }: ICellContainerProps) => getBGColorFromState(state, type)}
 `;
