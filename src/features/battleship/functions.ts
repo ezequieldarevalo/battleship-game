@@ -3,7 +3,7 @@ import {
   ORIENTATION_OPTIONS_ARRAY, DESTROYED, OWN, NONE, HITTED, MISSED,
 } from '../../lib/common/constants';
 
-function getRandomInt(min:number, max:number) {
+function getRandomInt(min: number, max: number) {
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
@@ -110,12 +110,13 @@ export const generateRandomOwnShips = (newShipSizeList: number[]): SHIP_AREA[] =
   return newShipsList;
 };
 
+// receives the gameboard state and return a new one with destroyed cells updated
 const updateShipDestroyed = (
   gameboardState: ICellState[],
   ownShip: SHIP_AREA,
 ) => {
-  const newGameboardState:ICellState[] = gameboardState;
-  ownShip.map((id:number) => {
+  const newGameboardState: ICellState[] = gameboardState;
+  ownShip.map((id: number) => {
     newGameboardState[id - 1] = { ...gameboardState[id - 1], state: DESTROYED };
     return 0;
   });
@@ -127,15 +128,19 @@ interface IAFTERHIT {
   hitResult: 'missed' | 'hitted' | 'destroyed';
 }
 
+// update cell state
+// if it is none update it to missed
+// if it is own update it to hit or destroyed
+// destroyed when is the last cell of one ship and hitted when no
 export const getGameboardStateAfterHit = (
   cellId: number,
   gameboardState: ICellState[],
   ownShips: SHIP_AREA[],
 ): IAFTERHIT => {
   let newGameboardState = gameboardState;
-  let newHitResult:'missed' | 'hitted' | 'destroyed';
+  let newHitResult: 'missed' | 'hitted' | 'destroyed';
   let newCellState: ICellState;
-  const actualCell:ICellState = gameboardState[cellId - 1];
+  const actualCell: ICellState = gameboardState[cellId - 1];
   if (actualCell.state === NONE) {
     newCellState = {
       ...actualCell,
@@ -171,7 +176,8 @@ export const getGameboardStateAfterHit = (
   return { gameboard: newGameboardState, hitResult: newHitResult };
 };
 
-const isCellAble = (shipArea: SHIP_AREA, direction: string, availableCells:number[]): boolean => {
+// define if a near cell is able to pick
+const isCellAble = (shipArea: SHIP_AREA, direction: string, availableCells: number[]): boolean => {
   let referenceValue: number;
   switch (direction) {
     case 'top':
@@ -212,7 +218,7 @@ interface IGetMostHittedShipReturnValue {
 const getMostHittedShip = (hittedShips: SHIP_AREA[]): IGetMostHittedShipReturnValue => {
   let maxSize = 0;
   let idMaxSize = -1;
-  hittedShips.map((ship:SHIP_AREA, index) => {
+  hittedShips.map((ship: SHIP_AREA, index) => {
     if (ship.length > maxSize) {
       maxSize = ship.length;
       idMaxSize = index;
@@ -231,6 +237,7 @@ const getOrientationFromValues = (cellId1: number, cellId2: number) => {
 };
 
 // discard not able target cells and choose one from the rest
+// if no hitted cells so execute a random choice
 export const emulateIdToHitChoice = (
   hittedShips: SHIP_AREA[],
   availableCells: number[],
