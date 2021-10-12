@@ -153,6 +153,31 @@ export const battleshipSlice = createSlice({
         }
       }
     },
+    restart: (state) => {
+      state.stage = BEGIN_STAGE;
+      state.status = 'idle';
+      state.humanPlayer = {
+        name: '',
+        ownShips: [],
+        gameboardState: [],
+      };
+      state.cpuPlayer = {
+        name: CPU,
+        ownShips: [],
+        gameboardState: [],
+      };
+      state.winner = NONE;
+      state.message = '';
+      state.activePlayer = 'human';
+    },
+    surrender: (state) => {
+      // Redux Toolkit allows us to write "mutating" logic in reducers. It
+      // doesn't actually mutate the state because it uses the Immer library,
+      // which detects changes to a "draft state" and produces a brand new
+      // immutable state based off those changes
+      state.winner = 'cpu';
+      state.stage = END_STAGE;
+    },
     // decrement: (state) => {
     //   state.value -= 1;
     // },
@@ -175,7 +200,9 @@ export const battleshipSlice = createSlice({
   // },
 });
 
-export const { begin, hit } = battleshipSlice.actions;
+export const {
+  begin, hit, restart, surrender,
+} = battleshipSlice.actions;
 
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of
@@ -185,6 +212,7 @@ export const selectCpuPlayer = (state: RootState) => state.battleship.cpuPlayer;
 export const selectStage = (state: RootState) => state.battleship.stage;
 export const selectMessage = (state: RootState) => state.battleship.message;
 export const selectActivePlayer = (state: RootState) => state.battleship.activePlayer;
+export const selectWinner = (state: RootState) => state.battleship.winner;
 
 // We can also write thunks by hand, which may contain both sync and async logic.
 // Here's an example of conditionally dispatching actions based on current state.
