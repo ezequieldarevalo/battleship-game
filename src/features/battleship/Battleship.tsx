@@ -43,7 +43,7 @@ function Battleship() {
       <Screen>
         <GameboardsPanel>
           <Gameboard id={playerInfo.name} withName type="human" miniature gameState={playerInfo.gameboardState} />
-          <Gameboard id={cpuInfo.name} withName type="cpu" gameState={cpuInfo.gameboardState} />
+          <Gameboard active={activePlayer === 'human'} id={cpuInfo.name} withName type="cpu" gameState={cpuInfo.gameboardState} />
         </GameboardsPanel>
         <div>
           <Button onClick={() => dispatch(surrender())}>
