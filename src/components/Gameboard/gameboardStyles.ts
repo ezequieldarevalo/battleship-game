@@ -1,9 +1,13 @@
 import styled from 'styled-components';
 import { CELL_STATE } from '../../lib/common/types';
+import {
+  GAMEBOARD_WIDTH_DESKTOP, GAMEBOARD_WIDTH_MOBILE, GAMEBOARD_WIDTH_MOBILE_MIN, GAMEBOARD_BORDER,
+} from '../../lib/common/config';
 
-const getBGColorFromState = (state:string) => {
+const getBGColorFromState = (state: string, type: 'human' | 'cpu') => {
   switch (state) {
-    case 'own': return 'grey';
+    case 'own':
+      if (type === 'human') return 'grey'; return 'transparent';
     case 'hitted': return 'orange';
     case 'destroyed': return 'red';
     case 'missed': return 'skyblue';
@@ -26,13 +30,13 @@ interface BoardGridProps {
 export const BoardGrid = styled.div`
   position: relative;
   display: grid;
-  border: 1px solid black;
+  border: ${GAMEBOARD_BORDER}px solid black;
   grid-template-columns: auto auto auto auto auto auto auto auto auto auto;
-  width: 400px;
-  height: 400px;
+  width: ${GAMEBOARD_WIDTH_DESKTOP}px;
+  height: ${GAMEBOARD_WIDTH_DESKTOP}px;
   @media (max-width: 996px) {
-    width: ${({ miniature }:BoardGridProps) => (miniature ? '150px' : '300px')};
-    height: ${({ miniature }: BoardGridProps) => (miniature ? '150px' : '300px')};
+    width: ${({ miniature }: BoardGridProps) => (miniature ? `${GAMEBOARD_WIDTH_MOBILE_MIN}px` : `${GAMEBOARD_WIDTH_MOBILE}px`)};
+    height: ${({ miniature }: BoardGridProps) => (miniature ? `${GAMEBOARD_WIDTH_MOBILE_MIN}px` : `${GAMEBOARD_WIDTH_MOBILE}px`)};
   }
 `;
 
@@ -42,5 +46,5 @@ interface ICellContainerProps {
 }
 export const CellContainer = styled.div`
   border: 1px solid black;
-  background: ${({ state }: ICellContainerProps) => getBGColorFromState(state)}
+  background: ${({ state, type }: ICellContainerProps) => getBGColorFromState(state, type)}
 `;

@@ -1,0 +1,4 @@
+export const GAMEBOARD_WIDTH_DESKTOP = 400;
+export const GAMEBOARD_WIDTH_MOBILE = 300;
+export const GAMEBOARD_WIDTH_MOBILE_MIN = 150;
+export const GAMEBOARD_BORDER = 4;
