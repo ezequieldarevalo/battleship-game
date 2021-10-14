@@ -12,8 +12,7 @@ import {
 interface IGameboardProps {
   id: string;
   type: 'human' | 'cpu';
-  initial?: boolean;
-  gameState: ICellState[];
+  gameState?: ICellState[];
   miniature?: boolean;
   withName?: boolean;
   children?: React.ReactElement;
@@ -23,7 +22,6 @@ interface IGameboardProps {
 const Gameboard: React.FunctionComponent<IGameboardProps> = ({
   id,
   type,
-  initial,
   gameState,
   miniature,
   withName,
@@ -33,33 +31,27 @@ const Gameboard: React.FunctionComponent<IGameboardProps> = ({
   Gameboard.defaultProps = {
     miniature: false,
     withName: false,
-    initial: false,
     children: <></>,
     active: false,
+    gameState: initialGameboardState,
   };
   const dispatch = useAppDispatch();
+
+  const gameboardState = (gameState as ICellState[]);
 
   return (
     <BoardContainer>
       {withName && <BoardTitle>{id}</BoardTitle>}
       <BoardGrid id={id} miniature={miniature}>
         {children}
-        {initial
-          ? initialGameboardState.map((cellState: ICellState) => (
-            <CellContainer
-              key={cellState.id}
-              state={cellState.state}
-              type={type}
-            />
-          ))
-          : gameState.map((cellState: ICellState) => (
-            <CellContainer
-              onClick={() => active && dispatch(hit({ cellId: cellState.id, player: type }))}
-              key={cellState.id}
-              state={cellState.state}
-              type={type}
-            />
-          ))}
+        {gameboardState.map((cellState: ICellState) => (
+          <CellContainer
+            onClick={() => active && dispatch(hit({ cellId: cellState.id, player: type }))}
+            key={cellState.id}
+            state={cellState.state}
+            type={type}
+          />
+        ))}
       </BoardGrid>
     </BoardContainer>
   );
