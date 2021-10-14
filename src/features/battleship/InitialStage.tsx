@@ -45,7 +45,7 @@ import {
 } from '../../lib/common/types';
 
 // COMPONENTS
-import Gameboard from '../../components/Gameboard';
+import Gameboard from './Gameboard';
 import {
   Screen,
   CurrentPlayer,

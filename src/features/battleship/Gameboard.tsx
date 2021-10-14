@@ -7,7 +7,7 @@ import { initialGameboardState } from '../../lib/common/constants';
 import { useAppDispatch } from '../../app/hooks';
 import {
   hit,
-} from '../../features/battleship/battleshipSlice';
+} from './battleshipSlice';
 
 interface IGameboardProps {
   id: string;

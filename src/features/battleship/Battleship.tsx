@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import Gameboard from '../../components/Gameboard';
+import Gameboard from './Gameboard';
 import {
   Screen,
   GameboardsPanel,
