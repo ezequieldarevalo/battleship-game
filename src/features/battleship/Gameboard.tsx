@@ -22,7 +22,7 @@ interface IGameboardProps {
 const Gameboard: React.FunctionComponent<IGameboardProps> = ({
   id,
   type,
-  gameState,
+  gameState = initialGameboardState,
   miniature,
   withName,
   children,
@@ -37,14 +37,12 @@ const Gameboard: React.FunctionComponent<IGameboardProps> = ({
   };
   const dispatch = useAppDispatch();
 
-  const gameboardState = (gameState as ICellState[]);
-
   return (
     <BoardContainer>
       {withName && <BoardTitle>{id}</BoardTitle>}
       <BoardGrid id={id} miniature={miniature}>
         {children}
-        {gameboardState.map((cellState: ICellState) => (
+        {gameState.map((cellState: ICellState) => (
           <CellContainer
             onClick={() => active && dispatch(hit({ cellId: cellState.id, player: type }))}
             key={cellState.id}
